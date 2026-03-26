@@ -1,4 +1,4 @@
-import { Link, Outlet } from "@tanstack/react-router"
+import { Link, Outlet, useNavigate } from "@tanstack/react-router"
 import {
     Building,
     CalendarDays,
@@ -25,6 +25,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { clearAuth, getUser } from "../lib/auth"
 
 const navItems = [
     { to: "/", label: "ภาพรวม", icon: LayoutDashboard },
@@ -39,6 +40,13 @@ const bottomNavItems = [
 
 export function MainLayout() {
     const [collapsed, setCollapsed] = useState(false)
+    const navigate = useNavigate()
+    const user = getUser()
+
+    function handleLogout() {
+        clearAuth()
+        navigate({ to: '/login' })
+    }
 
     return (
         <div className="min-h-screen bg-slate-50 flex">
@@ -136,20 +144,20 @@ export function MainLayout() {
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="relative flex items-center gap-2.5 h-10 px-2 rounded-xl hover:bg-slate-50">
                                 <Avatar className="h-8 w-8 border border-slate-200">
-                                    <AvatarImage src="https://github.com/shadcn.png" alt="@user" />
-                                    <AvatarFallback className="text-xs">US</AvatarFallback>
+                                    <AvatarImage src={user?.avatar ?? ''} alt={user?.name} />
+                                    <AvatarFallback className="text-xs">{user?.name?.slice(0, 2).toUpperCase() ?? 'US'}</AvatarFallback>
                                 </Avatar>
                                 <div className="hidden sm:flex flex-col text-left">
-                                    <p className="text-xs font-semibold text-slate-700 leading-tight">Developer Tester</p>
-                                    <p className="text-xs text-slate-400 leading-tight">dev@gmail.com</p>
+                                    <p className="text-xs font-semibold text-slate-700 leading-tight">{user?.name ?? 'Guest'}</p>
+                                    <p className="text-xs text-slate-400 leading-tight">{user?.email ?? ''}</p>
                                 </div>
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-56" align="end" forceMount>
                             <DropdownMenuLabel className="font-normal">
                                 <div className="flex flex-col space-y-1">
-                                    <p className="text-sm font-medium leading-none">Developer Tester</p>
-                                    <p className="text-xs leading-none text-muted-foreground">dev@gmail.com</p>
+                                    <p className="text-sm font-medium leading-none">{user?.name ?? 'Guest'}</p>
+                                    <p className="text-xs leading-none text-muted-foreground">{user?.email ?? ''}</p>
                                 </div>
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
@@ -158,7 +166,7 @@ export function MainLayout() {
                                 <span>โปรไฟล์</span>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600">
+                            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600 focus:text-red-600">
                                 <LogOut className="mr-2 h-4 w-4" />
                                 <span>ออกจากระบบ</span>
                             </DropdownMenuItem>
