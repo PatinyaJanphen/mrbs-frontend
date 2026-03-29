@@ -47,10 +47,10 @@ function AuthCallbackPage() {
                     </>
                 )}
                 {status === 'success' && (
-                    <p className="text-emerald-600 font-medium">เข้าสู่ระบบสำเร็จ! กำลังนำทาง...</p>
+                    <p className="text-emerald-600 font-medium">เข้าสู่ระบบสำเร็จ...</p>
                 )}
                 {status === 'error' && (
-                    <p className="text-red-500 font-medium">เกิดข้อผิดพลาด กำลังกลับไปหน้า Login...</p>
+                    <p className="text-red-500 font-medium">เกิดข้อผิดพลาด กำลังกลับไปหน้า เข้าสู่ระบบ...</p>
                 )}
             </div>
         </div>
