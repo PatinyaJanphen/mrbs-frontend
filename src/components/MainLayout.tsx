@@ -29,9 +29,9 @@ import { clearAuth, getUser } from "../lib/auth"
 
 const navItems = [
     { to: "/", label: "ภาพรวม", icon: LayoutDashboard },
-    { to: "/", label: "ห้องประชุม", icon: DoorOpen },
-    { to: "/", label: "การจองของฉัน", icon: CalendarDays },
-    { to: "/", label: "รายการจองทั้งหมด", icon: ClipboardList },
+    { to: "/rooms", label: "ห้องประชุม", icon: DoorOpen },
+    { to: "/bookings/my", label: "การจองของฉัน", icon: CalendarDays },
+    { to: "/bookings", label: "รายการจองทั้งหมด", icon: ClipboardList },
 ]
 
 const bottomNavItems = [
