@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { roomService } from '@/services/room.service'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, Loader2, Users, LayoutGrid, CheckCircle2, XCircle, Info, Building2, CalendarPlus } from 'lucide-react'
-import { useNavigate, useLocation } from '@tanstack/react-router'
+import { useNavigate, useLocation, Link } from '@tanstack/react-router'
 
 export function RoomDetail() {
     const navigate = useNavigate()
@@ -74,8 +74,10 @@ export function RoomDetail() {
                 </div>
 
                 <Button className="h-12 px-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-200 gap-2 font-medium transition-transform hover:scale-105 active:scale-95">
-                    <CalendarPlus className="w-5 h-5" />
-                    จองห้องนี้เลย
+                    <Link to="/bookings/add">
+                        <CalendarPlus className="w-5 h-5" />
+                        จองห้องนี้เลย
+                    </Link>
                 </Button>
             </div>
 

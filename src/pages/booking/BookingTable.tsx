@@ -6,14 +6,14 @@ import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import { useRouterState, Link } from '@tanstack/react-router'
 
-interface BookingsPageProps {
+interface BookingTableProps {
     myOnly?: boolean
 }
 
-export function BookingsPage({ myOnly = false }: BookingsPageProps) {
+export function BookingTable({ myOnly = false }: BookingTableProps) {
     const queryClient = useQueryClient()
     const routerState = useRouterState()
-    
+
     // Check if we are on "My Bookings" path if prop not explicitly provided
     const isMyBookings = myOnly || routerState.location.pathname.includes('/my')
 
@@ -60,7 +60,7 @@ export function BookingsPage({ myOnly = false }: BookingsPageProps) {
                     </Button>
                     {isMyBookings && (
                         <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white gap-2 h-11 px-5 rounded-xl shadow-lg shadow-blue-100">
-                            <Link to="/rooms">
+                            <Link to="/bookings/add">
                                 <CalendarPlus className="h-4.5 w-4.5" />
                                 จองห้องเพิ่ม
                             </Link>
@@ -83,9 +83,9 @@ export function BookingsPage({ myOnly = false }: BookingsPageProps) {
             ) : bookings.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {bookings.map((booking) => (
-                        <BookingCard 
-                            key={booking.id} 
-                            booking={booking} 
+                        <BookingCard
+                            key={booking.id}
+                            booking={booking}
                             showUserInfo={!isMyBookings}
                             onCancel={isMyBookings ? handleCancel : undefined}
                         />
@@ -102,7 +102,7 @@ export function BookingsPage({ myOnly = false }: BookingsPageProps) {
                     </p>
                     {isMyBookings && (
                         <Button asChild variant="outline" className="mt-6 border-blue-200 text-blue-600 hover:bg-blue-50 rounded-xl">
-                            <Link to="/rooms">เริ่มจองห้องแรกของคุณ</Link>
+                            <Link to="/bookings/add">เริ่มจองห้องแรกของคุณ</Link>
                         </Button>
                     )}
                 </div>
