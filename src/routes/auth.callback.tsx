@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { Building, Loader2 } from 'lucide-react'
 import { setAuth } from '../lib/auth'
+import { api } from '../lib/api'
 
 export const Route = createFileRoute('/auth/callback')({
     component: AuthCallbackPage,
@@ -23,15 +24,31 @@ function AuthCallbackPage() {
             return
         }
 
-        // Store token + user mock (should actually call /api/me)
-        setAuth(token, {
-            name: 'Developer Tester',
-            email: 'dev@gmail.com',
-            avatar: 'https://github.com/shadcn.png',
-        })
+        async function fetchProfile() {
+            try {
+                // temporarily set token for api interceptor to work
+                localStorage.setItem('mrbs_token', token!)
+                
+                const user = await api.get<any>('/auth/me')
+                
+                // Now overwrite with properly structured user object if needed,
+                // or just store what API returns
+                setAuth(token!, {
+                    name: user.name || 'User',
+                    email: user.email || '',
+                    avatar: user.avatar || user.profile_photo_url || '',
+                })
 
-        setStatus('success')
-        setTimeout(() => navigate({ to: '/' }), 1000)
+                setStatus('success')
+                setTimeout(() => navigate({ to: '/' }), 1000)
+            } catch (err) {
+                console.error("Failed to fetch profile", err)
+                setStatus('error')
+                setTimeout(() => navigate({ to: '/login' }), 2000)
+            }
+        }
+
+        fetchProfile()
     }, [navigate])
 
     return (

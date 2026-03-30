@@ -79,6 +79,7 @@ export function MainLayout() {
                             <Link
                                 key={item.label}
                                 to={item.to}
+                                activeOptions={{ exact: true }}
                                 title={collapsed ? item.label : undefined}
                                 className={`group flex items-center gap-3 rounded-xl text-sm font-medium text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-all [&.active]:bg-blue-50 [&.active]:text-blue-600 [&.active]:font-semibold ${collapsed ? "justify-center px-0 py-2.5" : "px-3 py-2.5"}`}
                             >
