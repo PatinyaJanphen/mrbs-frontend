@@ -5,10 +5,12 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
+import { useAuth } from '@/hooks/useAuth'
 
 export function RoomsPage() {
     const [search, setSearch] = useState('')
     const navigate = useNavigate()
+    const { isAdmin } = useAuth()
 
     const { data: roomsData, isLoading, error } = useQuery({
         queryKey: ['rooms', { search }],
@@ -25,13 +27,15 @@ export function RoomsPage() {
                     <h1 className="text-3xl font-bold text-slate-800">ห้องประชุม</h1>
                     <p className="text-slate-500 mt-1">จัดการห้องประชุมของระบบ</p>
                 </div>
-                <Button
-                    className="bg-blue-600 hover:bg-blue-700 text-white gap-2 h-11 px-5 rounded-xl shadow-lg shadow-blue-100"
-                    onClick={() => navigate({ to: '/rooms/add' } as any)}
-                >
-                    <Plus className="h-4.5 w-4.5" />
-                    เพิ่มห้องประชุม
-                </Button>
+                {isAdmin && (
+                    <Button
+                        className="bg-blue-600 hover:bg-blue-700 text-white gap-2 h-11 px-5 rounded-xl shadow-lg shadow-blue-100"
+                        onClick={() => navigate({ to: '/rooms/add' } as any)}
+                    >
+                        <Plus className="h-4.5 w-4.5" />
+                        เพิ่มห้องประชุม
+                    </Button>
+                )}
             </div>
 
             {/* Filter bar */}

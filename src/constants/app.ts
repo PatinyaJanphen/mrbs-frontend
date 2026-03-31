@@ -3,10 +3,10 @@
 export const APP_NAME = 'MRBS Workspace'
 
 export const USER_ROLES = {
-    SUPER_ADMIN: 'super_admin',
-    ADMIN: 'admin',
-    STAFF: 'staff',
-    USER: 'user',
+    SUPER_ADMIN: 0,
+    ADMIN: 1,
+    STAFF: 2,
+    USER: 3,
 } as const
 export type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES]
 

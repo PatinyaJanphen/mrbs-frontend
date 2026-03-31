@@ -1,5 +1,4 @@
-// Simple auth store using localStorage
-// Use @tanstack/store that already exists in the project
+import type { UserRole } from '@/constants/app'
 
 const TOKEN_KEY = 'mrbs_token'
 const USER_KEY = 'mrbs_user'
@@ -8,6 +7,7 @@ export interface AuthUser {
     name: string
     email: string
     avatar?: string
+    role: UserRole
 }
 
 // Simple reactive store helpers

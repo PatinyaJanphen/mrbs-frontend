@@ -28,15 +28,16 @@ function AuthCallbackPage() {
             try {
                 // temporarily set token for api interceptor to work
                 localStorage.setItem('mrbs_token', token!)
-                
+
                 const user = await api.get<any>('/auth/me')
-                
+
                 // Now overwrite with properly structured user object if needed,
                 // or just store what API returns
                 setAuth(token!, {
                     name: user.name || 'User',
                     email: user.email || '',
                     avatar: user.avatar || user.profile_photo_url || '',
+                    role: user.role ?? 3,
                 })
 
                 setStatus('success')
