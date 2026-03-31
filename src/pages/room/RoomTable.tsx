@@ -99,7 +99,7 @@ export function RoomsPage() {
                     </div>
                     <h3 className="text-xl font-bold text-slate-700">ไม่พบห้องประชุม</h3>
                     <p className="text-slate-400 mt-2 max-w-sm mx-auto">
-                        ไม่พบข้อมูลที่คุณกำลังค้นหา กรุณาลองใช้เงื่อนไขอื่น
+                        ไม่พบข้อมูลที่คุณกำลังค้นหา
                     </p>
                 </div>
             )}

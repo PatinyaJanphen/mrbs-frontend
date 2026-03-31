@@ -88,9 +88,6 @@ export function RoomDetail() {
                     <div className="w-full h-64 md:h-80 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-3xl flex items-center justify-center relative overflow-hidden group">
                         <div className="absolute inset-0 bg-blue-600/5 group-hover:bg-blue-600/10 transition-colors" />
                         <Building2 className="w-24 h-24 text-blue-200 opacity-50 relative z-10" />
-                        <div className="absolute bottom-6 left-6 right-6 backdrop-blur-md bg-white/60 p-4 rounded-2xl border border-white/50 shadow-sm flex items-center justify-between z-10 transition-transform group-hover:translate-y-0">
-                            <span className="font-medium text-blue-900 tracking-wide">ภาพตัวอย่างห้องประชุม</span>
-                        </div>
                     </div>
 
                     {/* Description */}
@@ -99,9 +96,9 @@ export function RoomDetail() {
                             <Info className="w-5 h-5 text-blue-500" />
                             รายละเอียดการใช้งาน
                         </h2>
-                        <div className="prose prose-slate prose-blue max-w-none">
-                            <p className="text-slate-600 leading-relaxed text-lg">
-                                {room.description || 'ไม่มีการระบุรายละเอียดพิเศษสำหรับห้องนี้ หากมีข้อสงสัยเพิ่มเติมกรุณาติดต่อผู้ดูแลระบบ'}
+                        <div className="bg-slate-50 p-4 rounded-xl prose prose-slate prose-blue max-w-none">
+                            <p className="text-slate-600 leading-relaxed ">
+                                {room.description || 'ไม่มีการระบุรายละเอียดพิเศษสำหรับห้องนี้'}
                             </p>
                         </div>
                     </div>
