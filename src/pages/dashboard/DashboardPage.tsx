@@ -1,12 +1,20 @@
 import { Building2, CalendarDays, Clock, Users } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { dashboardService } from '@/services/dashboard.service'
+import { useAuth } from '@/hooks/useAuth'
 
 export function DashboardPage() {
+    const { isAdmin } = useAuth()
+
     const { data: statsData, isLoading, error } = useQuery({
         queryKey: ['dashboard-stats'],
         queryFn: () => dashboardService.getStats(),
+        enabled: isAdmin, // Only run query if admin
     })
+
+    if (!isAdmin) {
+        return null // Show blank page as requested
+    }
 
     if (error) {
         console.error('Dashboard stats error:', error)

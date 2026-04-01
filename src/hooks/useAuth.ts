@@ -5,7 +5,8 @@ import { useMemo } from 'react'
 export function useAuth() {
     const user = useMemo(() => getUser(), [])
     
-    const role = user?.role as UserRole | undefined
+    // Force role to be a number to handle string/number issues
+    const role = user?.role !== undefined ? Number(user.role) : undefined
     
     const isAdmin = role === USER_ROLES.ADMIN || role === USER_ROLES.SUPER_ADMIN
     const isSuperAdmin = role === USER_ROLES.SUPER_ADMIN

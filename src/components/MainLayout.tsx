@@ -25,10 +25,11 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { clearAuth, getUser } from "../lib/auth"
+import { clearAuth } from "../lib/auth"
+import { useAuth } from "@/hooks/useAuth"
 
 const navItems = [
-    { to: "/", label: "ภาพรวม", icon: LayoutDashboard },
+    { to: "/", label: "ภาพรวม", icon: LayoutDashboard, admin: false },
     { to: "/rooms", label: "ห้องประชุม", icon: DoorOpen },
     { to: "/bookings/my", label: "การจองของฉัน", icon: CalendarDays },
     { to: "/bookings", label: "รายการจองทั้งหมด", icon: ClipboardList },
@@ -41,7 +42,9 @@ const bottomNavItems = [
 export function MainLayout() {
     const [collapsed, setCollapsed] = useState(false)
     const navigate = useNavigate()
-    const user = getUser()
+    const { user, isAdmin, isSuperAdmin } = useAuth()
+
+    const filteredNavItems = navItems.filter(item => !item.admin || isAdmin || isSuperAdmin)
 
     function handleLogout() {
         clearAuth()
@@ -73,7 +76,7 @@ export function MainLayout() {
                     {!collapsed && (
                         <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 pb-2">เมนูหลัก</p>
                     )}
-                    {navItems.map((item) => {
+                    {filteredNavItems.map((item) => {
                         const Icon = item.icon
                         return (
                             <Link

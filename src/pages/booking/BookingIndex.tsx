@@ -7,15 +7,21 @@ import { useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import type { CreateBookingDto } from '@/types/booking.dto'
+import { DateTimePicker } from '@/components/date-time-picker'
 
 export function BookingIndex() {
     const navigate = useNavigate()
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const [formData, setFormData] = useState<Partial<CreateBookingDto>>({
+    const [formData, setFormData] = useState<{
+        title: string
+        resource_id: number | undefined
+        start_time: Date | undefined
+        end_time: Date | undefined
+    }>({
         title: '',
         resource_id: undefined,
-        start_time: '',
-        end_time: '',
+        start_time: undefined,
+        end_time: undefined,
     })
 
     const { data: roomsData, isLoading: isLoadingRooms } = useQuery({
@@ -37,17 +43,28 @@ export function BookingIndex() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        
+
         if (!formData.title || !formData.resource_id || !formData.start_time || !formData.end_time) {
             toast.error('กรุณากรอกข้อมูลให้ครบถ้วน')
             return
         }
 
-        const start = new Date(formData.start_time)
-        const end = new Date(formData.end_time)
+        const start = formData.start_time
+        const end = formData.end_time
 
         if (end <= start) {
             toast.error('เวลาสิ้นสุดต้องมากกว่าเวลาเริ่มต้น')
+            return
+        }
+
+        // Check if same day
+        const isSameDay =
+            start.getDate() === end.getDate() &&
+            start.getMonth() === end.getMonth() &&
+            start.getFullYear() === end.getFullYear()
+
+        if (!isSameDay) {
+            toast.error('ระบบไม่รองรับการจองข้ามวัน กรุณาจองภายในวันเดียวกัน')
             return
         }
 
@@ -89,7 +106,7 @@ export function BookingIndex() {
                 <div className="absolute -top-32 -right-32 w-64 h-64 bg-blue-50 rounded-full blur-3xl pointer-events-none" />
 
                 <form onSubmit={handleSubmit} className="p-8 md:p-10 space-y-8 relative z-10">
-                    
+
                     {/* Section 1: details */}
                     <div className="space-y-6">
                         <div className="flex items-center gap-3 text-lg font-bold text-slate-800 border-b border-slate-100 pb-4">
@@ -98,7 +115,7 @@ export function BookingIndex() {
                             </div>
                             รายละเอียดการประชุม
                         </div>
-                        
+
                         <div className="space-y-2">
                             <label className="text-sm font-semibold text-slate-700">หัวข้อการประชุม <span className="text-red-500">*</span></label>
                             <input
@@ -152,24 +169,18 @@ export function BookingIndex() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
                                 <label className="text-sm font-semibold text-slate-700">เวลาเริ่มต้น <span className="text-red-500">*</span></label>
-                                <input
-                                    type="datetime-local"
-                                    name="start_time"
-                                    value={formData.start_time}
-                                    onChange={handleChange}
-                                    className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
-                                    required
+                                <DateTimePicker
+                                    date={formData.start_time}
+                                    setDate={(date) => setFormData(p => ({ ...p, start_time: date }))}
+                                    label="เลือกเวลาเริ่มประชุม"
                                 />
                             </div>
                             <div className="space-y-2">
                                 <label className="text-sm font-semibold text-slate-700">เวลาสิ้นสุด <span className="text-red-500">*</span></label>
-                                <input
-                                    type="datetime-local"
-                                    name="end_time"
-                                    value={formData.end_time}
-                                    onChange={handleChange}
-                                    className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
-                                    required
+                                <DateTimePicker
+                                    date={formData.end_time}
+                                    setDate={(date) => setFormData(p => ({ ...p, end_time: date }))}
+                                    label="เลือกเวลาสิ้นสุดประชุม"
                                 />
                             </div>
                         </div>
@@ -177,8 +188,8 @@ export function BookingIndex() {
 
                     {/* Submit */}
                     <div className="pt-8">
-                        <Button 
-                            type="submit" 
+                        <Button
+                            type="submit"
                             disabled={isSubmitting}
                             className="w-full h-14 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-lg shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-1 active:translate-y-0"
                         >
