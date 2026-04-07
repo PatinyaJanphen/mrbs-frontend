@@ -1,17 +1,26 @@
+import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { bookingService } from '@/services/booking.service'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, Loader2, XCircle, Clock, CheckCircle2, Ban, MapPin, User, CalendarClock } from 'lucide-react'
+import { ArrowLeft, Loader2, XCircle, Clock, CheckCircle2, Ban, User, CalendarClock } from 'lucide-react'
 import { useNavigate, useLocation } from '@tanstack/react-router'
 import { BOOKING_STATUS, type BookingStatus } from '@/constants/app'
 import { format } from 'date-fns'
 import { th } from 'date-fns/locale'
 import { toast } from 'sonner'
 
+import { useAuth } from '@/hooks/useAuth'
+import { BookingForm } from './components/BookingForm'
+import { roomService } from '@/services/room.service'
+import type { CreateBookingDto } from '@/types/booking.dto'
+
 export function BookingDetail() {
     const navigate = useNavigate()
     const location = useLocation()
     const queryClient = useQueryClient()
+    const { user } = useAuth()
+    
+    const [isEditing, setIsEditing] = useState(false)
 
     const idParam = location.pathname.split('/').pop()
     const bookingId = idParam ? parseInt(idParam, 10) : 0
@@ -20,6 +29,24 @@ export function BookingDetail() {
         queryKey: ['booking', bookingId],
         queryFn: () => bookingService.get(bookingId),
         enabled: !!bookingId,
+    })
+
+    const { data: roomsData, isLoading: isLoadingRooms } = useQuery({
+        queryKey: ['rooms'],
+        queryFn: () => roomService.list({ per_page: 100 }),
+    })
+
+    const updateMutation = useMutation({
+        mutationFn: (data: CreateBookingDto) => bookingService.update(bookingId, data),
+        onSuccess: () => {
+            toast.success('แก้ไขการจองสำเร็จ')
+            queryClient.invalidateQueries({ queryKey: ['booking', bookingId] })
+            queryClient.invalidateQueries({ queryKey: ['bookings'] })
+            setIsEditing(false)
+        },
+        onError: () => {
+            toast.error('ไม่สามารถแก้ไขการจองได้')
+        }
     })
 
     const cancelMutation = useMutation({
@@ -39,6 +66,9 @@ export function BookingDetail() {
             cancelMutation.mutate(bookingId)
         }
     }
+
+    const isOwner = booking?.user_id === user?.id
+    const canEdit = isOwner && booking?.status === BOOKING_STATUS.PENDING
 
     if (isLoading) {
         return (
@@ -84,11 +114,6 @@ export function BookingDetail() {
     const sConfig = getStatusConfig(booking.status)
     const StatusIcon = sConfig.icon
 
-    const startTime = new Date(booking.start_time)
-    const endTime = new Date(booking.end_time)
-    const formattedDate = format(startTime, 'EEEEที่ d MMMM yyyy', { locale: th })
-    const timeRange = `${format(startTime, 'HH:mm')} น. - ${format(endTime, 'HH:mm')} น.`
-
     return (
         <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
             {/* Header / Nav */}
@@ -103,68 +128,65 @@ export function BookingDetail() {
                         <ArrowLeft className="h-5 w-5" />
                     </Button>
                     <div>
-                        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">รายละเอียดการจอง</h1>
+                        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+                            {isEditing ? 'แก้ไขการจอง' : 'รายละเอียดการจอง'}
+                        </h1>
                         <p className="text-slate-500 mt-1 flex items-center gap-2">
                             หมายเลขอ้างอิง: BK-{booking.id.toString().padStart(4, '0')}
                         </p>
                     </div>
                 </div>
 
-                {/* Status Badge ใหญ่ๆ */}
-                <div className={`px-5 py-2.5 rounded-2xl flex items-center gap-2.5 font-bold border ${sConfig.bg} ${sConfig.color} ${sConfig.border} shadow-sm`}>
-                    <StatusIcon className="w-5 h-5" />
-                    {sConfig.label}
+                <div className="flex items-center gap-3">
+                    {/* Status Badge */}
+                    {!isEditing && (
+                        <div className={`px-5 py-2.5 rounded-2xl flex items-center gap-2.5 font-bold border ${sConfig.bg} ${sConfig.color} ${sConfig.border} shadow-sm`}>
+                            <StatusIcon className="w-5 h-5" />
+                            {sConfig.label}
+                        </div>
+                    )}
+
+                    {/* Edit Actions */}
+                    {canEdit && !isEditing && (
+                        <Button
+                            onClick={() => setIsEditing(true)}
+                            className="h-12 px-6 rounded-2xl bg-slate-800 hover:bg-slate-900 text-white shadow-lg gap-2 font-medium transition-all"
+                        >
+                            <CalendarClock className="w-4 h-4" />
+                            แก้ไขข้อมูล
+                        </Button>
+                    )}
+
+                    {isEditing && (
+                        <Button
+                            variant="ghost"
+                            onClick={() => setIsEditing(false)}
+                            className="h-12 px-6 rounded-2xl text-slate-500 hover:bg-white hover:shadow-sm transition-all"
+                        >
+                            ยกเลิกใบแก้ไข
+                        </Button>
+                    )}
                 </div>
             </div>
 
             {/* Main Content Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Left Column - Core Info */}
-                <div className="lg:col-span-2 space-y-8">
-                    {/* Big Hero Card */}
-                    <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-slate-50 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
-                        
-                        <div className="relative z-10">
-                            <h2 className="text-2xl font-bold text-slate-800 leading-snug mb-6">
-                                {booking.title}
-                            </h2>
-
-                            <div className="space-y-6">
-                                {/* Time Context */}
-                                <div className="flex items-start gap-4">
-                                    <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0 border border-blue-100">
-                                        <CalendarClock className="w-6 h-6 text-blue-600" />
-                                    </div>
-                                    <div className="pt-1">
-                                        <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">วันและเวลา</p>
-                                        <p className="font-bold text-slate-800 text-lg">{formattedDate}</p>
-                                        <p className="text-slate-600 mt-1">{timeRange}</p>
-                                    </div>
-                                </div>
-
-                                {/* Room Context */}
-                                <div className="flex items-start gap-4 pt-4 border-t border-slate-100">
-                                    <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center shrink-0 border border-indigo-100">
-                                        <MapPin className="w-6 h-6 text-indigo-600" />
-                                    </div>
-                                    <div className="pt-1">
-                                        <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">สถานที่ / ห้องประชุม</p>
-                                        <p className="font-bold text-slate-800 text-lg">
-                                            {booking.resource?.name || 'ไม่ระบุห้อง (-)'}
-                                        </p>
-                                        <Button 
-                                            variant="link" 
-                                            className="px-0 h-auto text-indigo-600 hover:text-indigo-700 mt-1"
-                                            onClick={() => navigate({ to: '/rooms/$roomId', params: { roomId: booking.resource_id.toString() } } as any)}
-                                        >
-                                            ดูข้อมูลห้องประชุม
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                {/* Left Column - Form */}
+                <div className="lg:col-span-2">
+                    <BookingForm 
+                        initialData={{
+                            title: booking.title,
+                            resource_id: booking.resource_id,
+                            start_time: booking.start_time,
+                            end_time: booking.end_time
+                        }}
+                        roomsData={roomsData}
+                        isLoadingRooms={isLoadingRooms}
+                        isSubmitting={updateMutation.isPending}
+                        isReadOnly={!isEditing}
+                        onSubmit={(data) => updateMutation.mutate(data)}
+                        submitLabel="บันทึกการแก้ไข"
+                    />
                 </div>
 
                 {/* Right Column - User Info & Actions */}
@@ -196,7 +218,7 @@ export function BookingDetail() {
                     </div>
 
                     {/* Actions Card */}
-                    {booking.status === BOOKING_STATUS.PENDING && (
+                    {!isEditing && booking.status === BOOKING_STATUS.PENDING && (
                         <div className="bg-white p-6 rounded-3xl border border-red-50 shadow-sm shadow-red-50 relative overflow-hidden">
                             <div className="absolute -right-4 -top-4 w-24 h-24 bg-red-50 rounded-full blur-2xl pointer-events-none" />
                             <h3 className="font-bold text-slate-800 mb-2 relative z-10">การจัดการ</h3>

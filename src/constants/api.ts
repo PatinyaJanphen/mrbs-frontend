@@ -17,6 +17,7 @@ export const API_ROUTES = {
         MY: '/bookings/my',
         DETAIL: (id: number) => `/bookings/${id}`,
         CREATE: '/bookings',
+        UPDATE: (id: number) => `/bookings/${id}`,
         CANCEL: (id: number) => `/bookings/${id}/cancel`,
         APPROVE: (id: number) => `/bookings/${id}/approve`,
     },

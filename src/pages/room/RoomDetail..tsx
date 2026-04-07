@@ -1,12 +1,22 @@
-import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { roomService } from '@/services/room.service'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, Loader2, Users, LayoutGrid, CheckCircle2, XCircle, Info, Building2, CalendarPlus } from 'lucide-react'
+import { ArrowLeft, Loader2, XCircle, Building2, CalendarPlus, Edit2 } from 'lucide-react'
 import { useNavigate, useLocation, Link } from '@tanstack/react-router'
+import { toast } from 'sonner'
+
+import { useAuth } from '@/hooks/useAuth'
+import { RoomForm } from './components/RoomForm'
+import type { CreateRoomDto } from '@/types/room.dto'
 
 export function RoomDetail() {
     const navigate = useNavigate()
     const location = useLocation()
+    const queryClient = useQueryClient()
+    const { isAdmin } = useAuth()
+    
+    const [isEditing, setIsEditing] = useState(false)
 
     const idParam = location.pathname.split('/').pop()
     const roomId = idParam ? parseInt(idParam, 10) : 0
@@ -15,6 +25,19 @@ export function RoomDetail() {
         queryKey: ['room', roomId],
         queryFn: () => roomService.get(roomId),
         enabled: !!roomId,
+    })
+
+    const updateMutation = useMutation({
+        mutationFn: (data: CreateRoomDto) => roomService.update(roomId, data),
+        onSuccess: () => {
+            toast.success('แก้ไขข้อมูลห้องสำเร็จ')
+            queryClient.invalidateQueries({ queryKey: ['room', roomId] })
+            queryClient.invalidateQueries({ queryKey: ['rooms'] })
+            setIsEditing(false)
+        },
+        onError: () => {
+            toast.error('ไม่สามารถแก้ไขข้อมูลห้องได้')
+        }
     })
 
     if (isLoading) {
@@ -48,7 +71,7 @@ export function RoomDetail() {
 
     return (
         <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
-            {/* Nav & Header */}
+            {/* Header & Actions */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="flex items-center gap-4">
                     <Button
@@ -61,101 +84,57 @@ export function RoomDetail() {
                     </Button>
                     <div>
                         <div className="flex items-center gap-3">
-                            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">{room.name}</h1>
+                            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+                                {isEditing ? 'แก้ไขข้อมูลห้อง' : room.name}
+                            </h1>
                             <div className={`px-3 py-1 text-xs font-semibold rounded-full border ${room.is_active ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-slate-100 text-slate-500 border-slate-200'}`}>
                                 {room.is_active ? 'พร้อมใช้งาน' : 'ปิดปรับปรุง'}
                             </div>
                         </div>
-                        <p className="text-slate-500 mt-2 flex items-center gap-2">
-                            <Building2 className="w-4 h-4" />
-                            ID ระบบอ้างอิง: #{room.id}
-                        </p>
-                    </div>
-                </div>
-
-                <Button className="h-12 px-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-200 gap-2 font-medium transition-transform hover:scale-105 active:scale-95">
-                    <Link to="/bookings/add">
-                        <CalendarPlus className="w-5 h-5" />
-                        จองห้องนี้เลย
-                    </Link>
-                </Button>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Main Detail Section */}
-                <div className="lg:col-span-2 space-y-8">
-                    {/* Hero placeholder section for aesthetic */}
-                    <div className="w-full h-64 md:h-80 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-3xl flex items-center justify-center relative overflow-hidden group">
-                        <div className="absolute inset-0 bg-blue-600/5 group-hover:bg-blue-600/10 transition-colors" />
-                        <Building2 className="w-24 h-24 text-blue-200 opacity-50 relative z-10" />
-                    </div>
-
-                    {/* Description */}
-                    <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-4">
-                        <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                            <Info className="w-5 h-5 text-blue-500" />
-                            รายละเอียดการใช้งาน
-                        </h2>
-                        <div className="bg-slate-50 p-4 rounded-xl prose prose-slate prose-blue max-w-none">
-                            <p className="text-slate-600 leading-relaxed ">
-                                {room.description || 'ไม่มีการระบุรายละเอียดพิเศษสำหรับห้องนี้'}
+                        {!isEditing && (
+                            <p className="text-slate-500 mt-2 flex items-center gap-2">
+                                <Building2 className="w-4 h-4" />
+                                ID ระบบอ้างอิง: #{room.id}
                             </p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Sidebar Stats */}
-                <div className="space-y-6">
-                    {/* Quick Stats Card */}
-                    <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-6">
-                        <h3 className="font-bold text-slate-800 tracking-tight">ข้อมูลห้อง</h3>
-
-                        <div className="space-y-5">
-                            <div className="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl">
-                                <div className="w-12 h-12 bg-white rounded-xl shadow-sm border border-slate-100 flex items-center justify-center text-blue-600">
-                                    <Users className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">ความจุสูงสุด</p>
-                                    <p className="font-bold text-slate-800">{room.capacity} ที่นั่ง</p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl">
-                                <div className="w-12 h-12 bg-white rounded-xl shadow-sm border border-slate-100 flex items-center justify-center text-amber-500">
-                                    <CheckCircle2 className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">สถานะการอนุมัติ</p>
-                                    <p className="font-bold text-slate-800">
-                                        {room.requires_approval ? 'ต้องถูกพิจารณาอนุมัติ' : 'จองและใช้งานได้ทันที'}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Equipment Card */}
-                    <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-5">
-                        <h3 className="font-bold text-slate-800 flex items-center gap-2">
-                            <LayoutGrid className="w-5 h-5 text-purple-500" />
-                            อุปกรณ์ที่มีให้บริการ
-                        </h3>
-
-                        {room.equipment && room.equipment.length > 0 ? (
-                            <div className="flex flex-wrap gap-2">
-                                {room.equipment.map((eq, i) => (
-                                    <span key={i} className="px-3.5 py-1.5 bg-purple-50 text-purple-700 border border-purple-100 rounded-full text-sm font-medium">
-                                        {eq}
-                                    </span>
-                                ))}
-                            </div>
-                        ) : (
-                            <p className="text-slate-500 text-sm bg-slate-50 p-4 rounded-xl text-center">ไม่มีการระบุอุปกรณ์พิเศษ</p>
+                        )}
+                        {isEditing && (
+                            <p className="text-slate-500 mt-2">ปรับปรุงรายละเอียดของ {room.name}</p>
                         )}
                     </div>
                 </div>
+
+                {!isEditing && (
+                    <div className="flex items-center gap-3">
+                        {isAdmin ? (
+                            <Button
+                                onClick={() => setIsEditing(true)}
+                                className="h-12 px-8 rounded-full bg-slate-800 hover:bg-slate-900 text-white shadow-lg gap-2 font-medium transition-transform hover:scale-105 active:scale-95"
+                            >
+                                <Edit2 className="w-4 h-4" />
+                                แก้ไขข้อมูลห้อง
+                            </Button>
+                        ) : (
+                            <Button className="h-12 px-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-200 gap-2 font-medium transition-transform hover:scale-105 active:scale-95">
+                                <Link to="/bookings/add" search={{ roomId: room.id }}>
+                                    <CalendarPlus className="w-5 h-5" />
+                                    จองห้องนี้เลย
+                                </Link>
+                            </Button>
+                        )}
+                    </div>
+                )}
             </div>
+
+            {/* Room Form (Readonly or Edit mode) */}
+            <RoomForm 
+                initialData={room}
+                isLoading={updateMutation.isPending}
+                isReadOnly={!isEditing}
+                onSubmit={(data) => updateMutation.mutate(data)}
+                onCancel={() => setIsEditing(false)}
+                submitLabel="บันทึกการแก้ไข"
+            />
         </div>
     )
 }
+

@@ -31,7 +31,7 @@ export function BookingCard({ booking, showUserInfo = false, onCancel }: Booking
     // Format times safely
     const startTime = new Date(booking.start_time)
     const endTime = new Date(booking.end_time)
-    
+
     const formattedDate = format(startTime, 'dd MMM yyyy', { locale: th })
     const timeRange = `${format(startTime, 'HH:mm')} - ${format(endTime, 'HH:mm')}`
 
@@ -89,9 +89,9 @@ export function BookingCard({ booking, showUserInfo = false, onCancel }: Booking
 
             {/* Actions Footer */}
             <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3 mt-auto">
-                <Button 
-                    variant="ghost" 
-                    asChild 
+                <Button
+                    variant="ghost"
+                    asChild
                     className="flex-1 justify-between px-4 hover:bg-slate-50 text-slate-600 hover:text-blue-600 h-10 rounded-xl transition-colors"
                 >
                     <Link to="/bookings/$bookingId" params={{ bookingId: booking.id.toString() }}>
@@ -99,16 +99,6 @@ export function BookingCard({ booking, showUserInfo = false, onCancel }: Booking
                         <ChevronRight className="w-4 h-4" />
                     </Link>
                 </Button>
-
-                {onCancel && booking.status === BOOKING_STATUS.PENDING && (
-                    <Button 
-                        variant="outline" 
-                        onClick={() => onCancel(booking.id)}
-                        className="shrink-0 h-10 px-4 text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200 hover:border-red-300 rounded-xl transition-all"
-                    >
-                        ยกเลิกการจอง
-                    </Button>
-                )}
             </div>
         </div>
     )

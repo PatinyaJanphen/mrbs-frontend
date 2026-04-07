@@ -25,14 +25,15 @@ export interface DateTimePickerProps {
     date: Date | undefined
     setDate: (date: Date | undefined) => void
     label?: string
+    disabled?: boolean
 }
 
-export function DateTimePicker({ date, setDate, label }: DateTimePickerProps) {
+export function DateTimePicker({ date, setDate, label, disabled = false }: DateTimePickerProps) {
     const hours = Array.from({ length: 24 }, (_, i) => i)
     const minutes = Array.from({ length: 60 }, (_, i) => i)
 
     const handleDateSelect = (newDate: Date | undefined) => {
-        if (!newDate) {
+        if (!newDate || disabled) {
            setDate(undefined)
            return
         }
@@ -49,7 +50,7 @@ export function DateTimePicker({ date, setDate, label }: DateTimePickerProps) {
     }
 
     const handleTimeChange = (type: 'hours' | 'minutes', value: string) => {
-        if (!date) return
+        if (!date || disabled) return
         
         const numValue = parseInt(value)
         if (type === 'hours') {
@@ -61,12 +62,14 @@ export function DateTimePicker({ date, setDate, label }: DateTimePickerProps) {
 
     return (
         <Popover>
-            <PopoverTrigger asChild>
+            <PopoverTrigger asChild disabled={disabled}>
                 <Button
                     variant={"outline"}
+                    disabled={disabled}
                     className={cn(
-                        "w-full h-12 justify-start text-left font-normal rounded-xl border-slate-200 bg-slate-50 hover:bg-white hover:ring-2 hover:ring-blue-500 transition-all shadow-sm",
-                        !date && "text-muted-foreground"
+                        "w-full h-12 justify-start text-left font-normal rounded-xl border-slate-200 bg-slate-50 transition-all shadow-sm",
+                        !date && "text-muted-foreground",
+                        disabled ? "opacity-80 cursor-default bg-slate-50 border-slate-100" : "hover:bg-white hover:ring-2 hover:ring-blue-500"
                     )}
                 >
                     <CalendarIcon className="mr-2 h-4 w-4 text-blue-500" />
