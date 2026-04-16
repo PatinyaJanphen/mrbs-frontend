@@ -15,7 +15,7 @@ export function RoomDetail() {
     const location = useLocation()
     const queryClient = useQueryClient()
     const { isAdmin } = useAuth()
-    
+
     const [isEditing, setIsEditing] = useState(false)
 
     const idParam = location.pathname.split('/').pop()
@@ -34,6 +34,7 @@ export function RoomDetail() {
             queryClient.invalidateQueries({ queryKey: ['room', roomId] })
             queryClient.invalidateQueries({ queryKey: ['rooms'] })
             setIsEditing(false)
+            navigate({ to: '/rooms' } as any)
         },
         onError: () => {
             toast.error('ไม่สามารถแก้ไขข้อมูลห้องได้')
@@ -55,15 +56,15 @@ export function RoomDetail() {
                 <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <XCircle className="w-8 h-8 text-red-500" />
                 </div>
-                <h3 className="text-2xl font-bold text-red-900">ไม่พบห้องประชุมนี้</h3>
-                <p className="text-red-700">อภัยด้วย เราไม่สามารถค้นหาข้อมูลห้องประชุมที่คุณต้องการได้</p>
+                <h3 className="text-2xl font-bold text-red-900">ไม่พบห้องประชุม</h3>
+                <p className="text-red-700">ไม่พบข้อมูลห้องประชุม</p>
                 <Button
                     variant="outline"
                     className="mt-6 border-red-200 text-red-700 hover:bg-red-100 px-8 h-11"
                     onClick={() => navigate({ to: '/rooms' } as any)}
                 >
                     <ArrowLeft className="w-4 h-4 mr-2" />
-                    กลับไปหน้ารวมห้องประชุม
+                    กลับหน้าห้องประชุม
                 </Button>
             </div>
         )
@@ -71,7 +72,6 @@ export function RoomDetail() {
 
     return (
         <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
-            {/* Header & Actions */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="flex items-center gap-4">
                     <Button
@@ -84,7 +84,7 @@ export function RoomDetail() {
                     </Button>
                     <div>
                         <div className="flex items-center gap-3">
-                            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+                            <h1 className="text-2xl font-bold text-slate-800">
                                 {isEditing ? 'แก้ไขข้อมูลห้อง' : room.name}
                             </h1>
                             <div className={`px-3 py-1 text-xs font-semibold rounded-full border ${room.is_active ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-slate-100 text-slate-500 border-slate-200'}`}>
@@ -92,13 +92,13 @@ export function RoomDetail() {
                             </div>
                         </div>
                         {!isEditing && (
-                            <p className="text-slate-500 mt-2 flex items-center gap-2">
+                            <p className="flex items-center gap-2 text-slate-500 text-sm">
                                 <Building2 className="w-4 h-4" />
-                                ID ระบบอ้างอิง: #{room.id}
+                                ข้อมูลห้องประชุม
                             </p>
                         )}
                         {isEditing && (
-                            <p className="text-slate-500 mt-2">ปรับปรุงรายละเอียดของ {room.name}</p>
+                            <p className="text-slate-500 text-sm">ปรับปรุงรายละเอียดของ {room.name}</p>
                         )}
                     </div>
                 </div>
@@ -125,8 +125,7 @@ export function RoomDetail() {
                 )}
             </div>
 
-            {/* Room Form (Readonly or Edit mode) */}
-            <RoomForm 
+            <RoomForm
                 initialData={room}
                 isLoading={updateMutation.isPending}
                 isReadOnly={!isEditing}

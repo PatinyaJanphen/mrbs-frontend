@@ -1,18 +1,20 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { FileText, Clock, MapPin, Loader2, CalendarPlus, Save } from 'lucide-react'
+import { FileText, Clock, MapPin, Loader2, Building2 } from 'lucide-react'
 import { DateTimePicker } from '@/components/date-time-picker'
 import { toast } from 'sonner'
 import type { CreateBookingDto } from '@/types/booking.dto'
 import type { PaginatedRooms } from '@/types/room.dto'
 import { Input } from '#/components/ui/input'
+import { Label } from '#/components/ui/label'
 
 interface BookingFormProps {
     initialData?: Partial<CreateBookingDto>
     roomsData?: PaginatedRooms
-    isLoadingRooms?: boolean
+    isLoading?: boolean
     isSubmitting?: boolean
     onSubmit: (data: CreateBookingDto) => void
+    onCancel: () => void
     submitLabel?: string
     isReadOnly?: boolean
 }
@@ -20,10 +22,10 @@ interface BookingFormProps {
 export function BookingForm({
     initialData,
     roomsData,
-    isLoadingRooms,
-    isSubmitting,
+    isLoading,
     onSubmit,
-    submitLabel = 'ยืนยันการจอง',
+    onCancel,
+    submitLabel = 'บันทึกการจอง',
     isReadOnly = false
 }: BookingFormProps) {
     const [formData, setFormData] = useState<{
@@ -62,7 +64,7 @@ export function BookingForm({
             start.getFullYear() === end.getFullYear()
 
         if (!isSameDay) {
-            toast.error('ระบบไม่รองรับการจองข้ามวัน กรุณาจองภายในวันเดียวกัน')
+            toast.error('ระบบไม่รองรับการจองข้ามวัน')
             return
         }
 
@@ -86,39 +88,34 @@ export function BookingForm({
     }
 
     return (
-        <div className={`bg-white rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/40 overflow-hidden relative ${isReadOnly ? 'bg-slate-50/50' : ''}`}>
-            {/* Decorative blob */}
-            <div className="absolute -top-32 -right-32 w-64 h-64 bg-blue-50 rounded-full blur-3xl pointer-events-none" />
-
-            <form onSubmit={handleSubmit} className="p-8 md:p-10 space-y-8 relative z-10">
-                {/* Section 1: details */}
-                <div className="space-y-6">
-                    <div className="flex items-center gap-3 text-lg font-bold text-slate-800 border-b border-slate-100 pb-4">
-                        <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
-                            <FileText className="w-5 h-5" />
-                        </div>
-                        รายละเอียดการประชุม
-                    </div>
-
-                    <div className="space-y-2">
-                        <label className="text-sm font-semibold text-slate-700">หัวข้อการประชุม {!isReadOnly && <span className="text-red-500">*</span>}</label>
+        <div className={`bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden ${isReadOnly ? 'bg-slate-50/50' : ''}`}>
+            <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2.5">
+                        <Label htmlFor="title" className="text-slate-700 font-medium flex items-center gap-2">
+                            <FileText className="w-4 h-4 text-blue-500" />
+                            หัวข้อการประชุม {!isReadOnly && <span className="text-red-500">*</span>}
+                        </Label>
                         <Input
                             type="text"
                             name="title"
                             disabled={isReadOnly}
                             value={formData.title}
                             onChange={handleChange}
-                            placeholder={isReadOnly ? 'ไม่มีชื่อการประชุม' : "เช่น ประชุมสรุปโปรเจกต์ Q3"}
+                            placeholder={isReadOnly ? 'ไม่มีชื่อการประชุม' : "เช่น ประชุมสรุปการขาย"}
                             className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none disabled:bg-white disabled:opacity-80"
                             required
                         />
                     </div>
 
-                    <div className="space-y-2">
-                        <label className="text-sm font-semibold text-slate-700">ห้องประชุมที่ต้องการ {!isReadOnly && <span className="text-red-500">*</span>}</label>
-                        {isLoadingRooms ? (
+                    <div className="space-y-2.5">
+                        <Label htmlFor="resource_id" className="text-slate-700 font-medium flex items-center gap-2">
+                            <Building2 className="w-4 h-4 text-blue-500" />
+                            ห้องประชุมที่ต้องการ {!isReadOnly && <span className="text-red-500">*</span>}
+                        </Label>
+                        {isLoading ? (
                             <div className="h-12 flex items-center px-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-400">
-                                <Loader2 className="w-4 h-4 mr-2 animate-spin" /> กำลังโหลดรายชื่อห้อง...
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" /> กำลังโหลดรายชื่อห้องประชุม...
                             </div>
                         ) : (
                             <div className="relative">
@@ -131,10 +128,10 @@ export function BookingForm({
                                     className={`w-full h-12 pl-12 pr-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none appearance-none disabled:bg-white disabled:opacity-80`}
                                     required
                                 >
-                                    <option value="" disabled>-- เลือกห้องประชุม --</option>
+                                    <option value="" disabled>- เลือกห้องประชุม -</option>
                                     {roomsData?.data?.filter(r => r.is_active || r.id === formData.resource_id).map(room => (
                                         <option key={room.id} value={room.id}>
-                                            {room.name} (จุ {room.capacity} คน) {room.requires_approval ? '- ต้องรออนุมัติ' : ''}
+                                            {room.name} (ความจุ {room.capacity} ที่นั่ง) {room.requires_approval ? '- ต้องรออนุมัติ' : ''}
                                         </option>
                                     ))}
                                 </select>
@@ -150,7 +147,6 @@ export function BookingForm({
                     </div>
                 </div>
 
-                {/* Section 2: Time */}
                 <div className="space-y-6 pt-4">
                     <div className="flex items-center gap-3 text-lg font-bold text-slate-800 border-b border-slate-100 pb-4">
                         <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
@@ -160,46 +156,47 @@ export function BookingForm({
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <label className="text-sm font-semibold text-slate-700">เวลาเริ่มต้น {!isReadOnly && <span className="text-red-500">*</span>}</label>
+                        <div className="space-y-2.5">
+                            <Label htmlFor='start_time' className="text-sm font-semibold text-slate-700">
+                                เวลาเริ่มต้น {!isReadOnly && <span className="text-red-500">*</span>}
+                            </Label>
                             <DateTimePicker
                                 date={formData.start_time}
                                 disabled={isReadOnly}
                                 setDate={(date) => setFormData(p => ({ ...p, start_time: date }))}
-                                label="เลือกเวลาเริ่มประชุม"
+                                label="เลือกเวลาเริ่ม"
                             />
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-semibold text-slate-700">เวลาสิ้นสุด {!isReadOnly && <span className="text-red-500">*</span>}</label>
+                        <div className="space-y-2.5">
+                            <Label htmlFor='end_time' className="text-sm font-semibold text-slate-700">
+                                เวลาสิ้นสุด {!isReadOnly && <span className="text-red-500">*</span>}
+                            </Label>
                             <DateTimePicker
                                 date={formData.end_time}
                                 disabled={isReadOnly}
                                 setDate={(date) => setFormData(p => ({ ...p, end_time: date }))}
-                                label="เลือกเวลาสิ้นสุดประชุม"
+                                label="เลือกเวลาสิ้นสุด"
                             />
                         </div>
                     </div>
                 </div>
 
-                {/* Submit */}
                 {!isReadOnly && (
-                    <div className="pt-8">
+                    <div className="flex items-center justify-end gap-3 pt-6 border-t border-slate-100 mt-8">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            className="bg-white hover:bg-slate-100 text-slate-600 border-slate-200"
+                            onClick={onCancel}
+                        >
+                            ยกเลิก
+                        </Button>
                         <Button
                             type="submit"
-                            disabled={isSubmitting}
-                            className="w-full h-14 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-lg shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-1 active:translate-y-0"
+                            disabled={isLoading}
+                            className="bg-blue-600 hover:bg-blue-700 text-white min-w-[120px]"
                         >
-                            {isSubmitting ? (
-                                <>
-                                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                                    กำลังดำเนินการ...
-                                </>
-                            ) : (
-                                <>
-                                    {initialData?.resource_id ? <Save className="w-5 h-5 mr-2" /> : <CalendarPlus className="w-5 h-5 mr-2" />}
-                                    {submitLabel}
-                                </>
-                            )}
+                            {isLoading ? 'กำลังบันทึก...' : submitLabel}
                         </Button>
                     </div>
                 )}

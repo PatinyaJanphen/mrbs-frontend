@@ -34,10 +34,12 @@ function AuthCallbackPage() {
                 // Now overwrite with properly structured user object if needed,
                 // or just store what API returns
                 setAuth(token!, {
+                    id: user.id,
                     name: user.name || 'User',
                     email: user.email || '',
                     avatar: user.avatar || user.profile_photo_url || '',
                     role: user.role ?? 3,
+                    company_id: user.company_id,
                 })
 
                 setStatus('success')

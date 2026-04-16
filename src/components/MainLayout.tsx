@@ -32,7 +32,6 @@ const navItems = [
     { to: "/", label: "ภาพรวม", icon: LayoutDashboard, admin: false },
     { to: "/rooms", label: "ห้องประชุม", icon: DoorOpen },
     { to: "/bookings/my", label: "การจองของฉัน", icon: CalendarDays },
-    { to: "/bookings", label: "รายการจองทั้งหมด", icon: ClipboardList },
 ]
 
 const bottomNavItems = [

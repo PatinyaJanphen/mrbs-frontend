@@ -25,9 +25,12 @@ function LoginPage() {
     // Dev mock login (for development)
     function handleMockLogin() {
         setAuth('mock-token-dev-12345', {
+            id: 1,
             name: 'Developer Tester',
             email: 'dev@gmail.com',
             avatar: 'https://github.com/shadcn.png',
+            role: 3,
+            company_id: 1,
         })
         navigate({ to: '/' })
     }

@@ -13,7 +13,7 @@ export function BookingIndex() {
     const navigate = useNavigate()
     const [isSubmitting, setIsSubmitting] = useState(false)
 
-    const { data: roomsData, isLoading: isLoadingRooms } = useQuery({
+    const { data: roomsData, isLoading: isLoading } = useQuery({
         queryKey: ['rooms'],
         queryFn: () => roomService.list({ per_page: 100 }),
     })
@@ -21,11 +21,11 @@ export function BookingIndex() {
     const createMutation = useMutation({
         mutationFn: (data: CreateBookingDto) => bookingService.create(data),
         onSuccess: () => {
-            toast.success('ส่งคำขอจองห้องประชุมสำเร็จ')
+            toast.success('จองห้องประชุมสำเร็จ')
             navigate({ to: '/bookings/my' } as any)
         },
         onError: (err: any) => {
-            toast.error(err?.response?.data?.message || 'ไม่สามารถทำการจองได้ กรุณาตรวจสอบข้อมูล')
+            toast.error(err?.response?.data?.message || 'ไม่สามารถทำการจองได้กรุณาลองอีกครั้ง')
             setIsSubmitting(false)
         }
     })
@@ -36,29 +36,30 @@ export function BookingIndex() {
     }
 
     return (
-        <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out py-6">
-            {/* Header */}
-            <div className="flex items-center gap-4">
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-10 w-10 shrink-0 text-slate-500 hover:bg-white hover:shadow-sm transition-all rounded-full"
-                    onClick={() => window.history.back()}
-                >
-                    <ArrowLeft className="h-5 w-5" />
-                </Button>
-                <div>
-                    <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">สร้างการจองใหม่</h1>
-                    <p className="text-slate-500 mt-1">กรอกข้อมูลเพื่อขอใช้งานห้องประชุม</p>
+        <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="flex items-center gap-4">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-10 w-10 shrink-0 text-slate-500 hover:text-slate-800"
+                        onClick={() => window.history.back()}
+                    >
+                        <ArrowLeft className="h-5 w-5" />
+                    </Button>
+                    <div>
+                        <h1 className="text-2xl font-bold text-slate-800">สร้างการจองห้องประชุม</h1>
+                        <p className="text-slate-500 text-sm">กรอกข้อมูลเพื่อจองห้องประชุม</p>
+                    </div>
                 </div>
             </div>
 
-            {/* Form Component */}
-            <BookingForm 
+            <BookingForm
                 roomsData={roomsData}
-                isLoadingRooms={isLoadingRooms}
+                isLoading={isLoading}
                 isSubmitting={isSubmitting}
                 onSubmit={handleSubmit}
+                onCancel={() => navigate({ to: '/bookings/my' } as any)}
             />
         </div>
     )
