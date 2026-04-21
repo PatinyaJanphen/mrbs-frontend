@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { DoorOpen, Loader2, Search, Plus, Armchair, ReceiptText } from 'lucide-react'
+import { DoorOpen, Loader2, Search, Plus, Armchair, ReceiptText, History } from 'lucide-react'
 import { roomService } from '@/services/room.service'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -112,6 +112,21 @@ export function RoomsPage() {
                                                     <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shrink-0 ${room.is_active ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-slate-100 text-slate-500 border border-slate-200'}`}>
                                                         {room.is_active ? 'เปิดใช้งาน' : 'ปิดใช้งาน'}
                                                     </span>
+
+                                                    {canManage && (
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            className="h-8 px-3 rounded-lg text-indigo-500 hover:text-indigo-600 hover:bg-indigo-50 font-bold gap-1.5 ml-auto"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation()
+                                                                navigate({ to: '/rooms/$roomId/history', params: { roomId: room.id.toString() } } as any)
+                                                            }}
+                                                        >
+                                                            <History className="h-3.5 w-3.5" />
+                                                            ประวัติการจอง
+                                                        </Button>
+                                                    )}
                                                 </div>
                                                 <div className="flex items-center gap-2 text-slate-500 text-sm line-clamp-1 max-w-md">
                                                     <Armchair className="w-4 h-4 text-blue-500" />

@@ -141,9 +141,9 @@ export function TodayTimeline({ roomId }: { roomId: number }) {
 
     const todayBookings = useMemo(() => {
         return (bookingsData?.data ?? []).filter(b => {
-             const isConfirmed = b.status !== BOOKING_STATUS.CANCELLED;
-             const isToday = b.start_time.startsWith(todayKey);
-             return isConfirmed && isToday;
+            const isConfirmed = b.status !== BOOKING_STATUS.CANCELLED;
+            const isToday = b.start_time.startsWith(todayKey);
+            return isConfirmed && isToday;
         })
     }, [bookingsData, todayKey])
 
@@ -320,4 +320,90 @@ export function useExpandedRooms() {
     }
 
     return { isExpanded, toggleExpand }
+}
+
+// =============================================
+// REUSABLE DAY TIMELINE — สำหรับใช้ในฟอร์มการจอง
+// =============================================
+export function RoomDayTimeline({ roomId, date, label }: { roomId: number, date?: Date, label?: string }) {
+    const dateKey = useMemo(() => date ? formatDateKey(date) : formatDateKey(new Date()), [date])
+    const dateLabel = useMemo(() => date ? formatDateLabel(date) : 'วันนี้', [date])
+
+    const { data: bookingsData, isLoading } = useQuery({
+        queryKey: ['bookings', 'room-day-timeline', roomId, dateKey],
+        queryFn: () => bookingService.list({ resource_id: roomId, from: dateKey, to: dateKey, per_page: 50 }),
+        enabled: !!roomId,
+    })
+
+    const dayBookings = useMemo(() => {
+        return (bookingsData?.data ?? []).filter(b => {
+            const isConfirmed = b.status !== BOOKING_STATUS.CANCELLED;
+            const isTargetDate = b.start_time.startsWith(dateKey);
+            return isConfirmed && isTargetDate;
+        })
+    }, [bookingsData, dateKey])
+
+    if (!roomId) return null;
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center gap-2 py-4 text-slate-400 text-xs bg-slate-50/50 rounded-xl px-4 border border-dashed border-slate-200">
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-500" />
+                <span>กำลังโหลดข้อมูลความว่างสำหรับ {label || dateLabel}...</span>
+            </div>
+        )
+    }
+
+    return (
+        <div className="space-y-2 p-4 bg-white rounded-xl border border-blue-50 shadow-sm">
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-xs font-bold text-slate-600">
+                    <CalendarDays className="w-3.5 h-3.5 text-blue-500" />
+                    <span>ตารางการจอง: {label || dateLabel}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 rounded-full bg-slate-100 border border-slate-200" />
+                        <span className="text-[10px] text-slate-400 font-medium">ว่าง</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 rounded-full bg-amber-200 border border-amber-300" />
+                        <span className="text-[10px] text-slate-400 font-medium">รออนุมัติ</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 rounded-full bg-emerald-200 border border-emerald-300" />
+                        <span className="text-[10px] text-slate-400 font-medium">จองแล้ว</span>
+                    </div>
+                </div>
+            </div>
+
+            <div className="relative pt-4">
+                {/* Hour labels */}
+                <div className="flex justify-between text-[9px] text-slate-400 font-bold mb-1 px-1">
+                    {TIMELINE_HOURS.map((h) => (
+                        <span key={h} className="w-0 text-center relative">
+                            {String(h).padStart(2, '0')}
+                        </span>
+                    ))}
+                </div>
+
+                <DayTimelineBar bookings={dayBookings} isToday={dateKey === formatDateKey(new Date())} />
+
+                <div className="flex justify-between mt-1 px-1">
+                    <span className="text-[8px] text-slate-300 font-bold">07:00</span>
+                    <span className="text-[8px] text-slate-300 font-bold">18:00</span>
+                </div>
+            </div>
+
+            {dayBookings.length > 0 ? (
+                <p className="text-[10px] text-orange-600 font-medium text-center italic bg-orange-50/50 py-1 rounded-lg">
+                    * มีการจอง {dayBookings.length} รายการในวันที่เลือก กรุณาตรวจสอบเวลาที่ว่าง
+                </p>
+            ) : (
+                <p className="text-[10px] text-emerald-600 font-medium text-center italic bg-emerald-50/50 py-1 rounded-lg">
+                    * ห้องว่างตลอดทั้งวันสำหรับวันที่เลือก
+                </p>
+            )}
+        </div>
+    )
 }

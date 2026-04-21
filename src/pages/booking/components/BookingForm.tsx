@@ -7,6 +7,7 @@ import type { CreateBookingDto } from '@/types/booking.dto'
 import type { PaginatedRooms } from '@/types/room.dto'
 import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
+import { RoomDayTimeline } from '#/pages/room/components/RoomTimeline'
 
 interface BookingFormProps {
     initialData?: Partial<CreateBookingDto>
@@ -146,6 +147,15 @@ export function BookingForm({
                         )}
                     </div>
                 </div>
+
+                {!isReadOnly && formData.resource_id && (
+                    <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                        <RoomDayTimeline
+                            roomId={Number(formData.resource_id)}
+                            date={formData.start_time}
+                        />
+                    </div>
+                )}
 
                 <div className="space-y-6 pt-4">
                     <div className="flex items-center gap-3 text-lg font-bold text-slate-800 border-b border-slate-100 pb-4">

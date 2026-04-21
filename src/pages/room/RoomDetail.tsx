@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { roomService } from '@/services/room.service'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, Loader2, XCircle, Building2, CalendarPlus, Edit2 } from 'lucide-react'
-import { useNavigate, useLocation, Link } from '@tanstack/react-router'
+import { useNavigate, useLocation, Link, useParams } from '@tanstack/react-router'
 import { toast } from 'sonner'
 
 import { useAuth } from '@/hooks/useAuth'
@@ -12,14 +12,13 @@ import type { CreateRoomDto } from '@/types/room.dto'
 
 export function RoomDetail() {
     const navigate = useNavigate()
-    const location = useLocation()
     const queryClient = useQueryClient()
     const { isAdmin } = useAuth()
 
     const [isEditing, setIsEditing] = useState(false)
 
-    const idParam = location.pathname.split('/').pop()
-    const roomId = idParam ? parseInt(idParam, 10) : 0
+    const { roomId: roomIdStr } = useParams({ from: '/_layout/rooms/$roomId' })
+    const roomId = Number(roomIdStr)
 
     const { data: room, isLoading, error } = useQuery({
         queryKey: ['room', roomId],

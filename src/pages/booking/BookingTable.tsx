@@ -73,9 +73,11 @@ export function BookingTable({ myOnly = false }: BookingTableProps) {
                                     </div>
 
                                     <div className="space-y-1.5 min-w-0">
-                                        <h3 className="font-bold text-xl text-slate-900 group-hover:text-blue-700 transition-colors truncate">
-                                            {booking.title}
-                                        </h3>
+                                        <div className="space-y-1">
+                                            <h3 className="font-bold text-xl text-slate-900 group-hover:text-blue-700 transition-colors truncate">
+                                                {booking.title}
+                                            </h3>
+                                        </div>
 
                                         <div className="flex items-center gap-1.5 text-slate-500 text-sm font-medium">
                                             <DoorOpen className="w-3.5 h-3.5 shrink-0" />
@@ -104,8 +106,8 @@ export function BookingTable({ myOnly = false }: BookingTableProps) {
                                             {(() => {
                                                 const statusMap: Record<number, { label: string; bg: string; text: string; border: string }> = {
                                                     0: { label: 'รอการอนุมัติ', bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-100' },
-                                                    1: { label: 'อนุมัติแล้ว', bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-100' },
-                                                    2: { label: 'ยกเลิกแล้ว', bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-100' },
+                                                    1: { label: 'อนุมัติการจอง', bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-100' },
+                                                    2: { label: 'ยกเลิกการจอง', bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-100' },
                                                 }
                                                 const s = statusMap[Number(booking.status)] ?? { label: `ไม่ระบุ (${booking.status})`, bg: 'bg-slate-50', text: 'text-slate-400', border: 'border-slate-200' }
                                                 return (

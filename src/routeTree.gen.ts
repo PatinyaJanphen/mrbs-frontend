@@ -23,8 +23,11 @@ import { Route as LayoutBookingsIndexRouteImport } from './routes/_layout/bookin
 import { Route as LayoutRoomsAddRouteImport } from './routes/_layout/rooms/add'
 import { Route as LayoutRoomsRoomIdRouteImport } from './routes/_layout/rooms/$roomId'
 import { Route as LayoutBookingsMyRouteImport } from './routes/_layout/bookings/my'
+import { Route as LayoutBookingsApprovalsRouteImport } from './routes/_layout/bookings/approvals'
 import { Route as LayoutBookingsAddRouteImport } from './routes/_layout/bookings/add'
 import { Route as LayoutBookingsBookingIdRouteImport } from './routes/_layout/bookings/$bookingId'
+import { Route as LayoutRoomsRoomIdIndexRouteImport } from './routes/_layout/rooms/$roomId.index'
+import { Route as LayoutRoomsRoomIdHistoryRouteImport } from './routes/_layout/rooms/$roomId.history'
 import { Route as LayoutRoomsRoomIdEditRouteImport } from './routes/_layout/rooms/$roomId.edit'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -96,6 +99,11 @@ const LayoutBookingsMyRoute = LayoutBookingsMyRouteImport.update({
   path: '/my',
   getParentRoute: () => LayoutBookingsRouteRoute,
 } as any)
+const LayoutBookingsApprovalsRoute = LayoutBookingsApprovalsRouteImport.update({
+  id: '/approvals',
+  path: '/approvals',
+  getParentRoute: () => LayoutBookingsRouteRoute,
+} as any)
 const LayoutBookingsAddRoute = LayoutBookingsAddRouteImport.update({
   id: '/add',
   path: '/add',
@@ -106,6 +114,17 @@ const LayoutBookingsBookingIdRoute = LayoutBookingsBookingIdRouteImport.update({
   path: '/$bookingId',
   getParentRoute: () => LayoutBookingsRouteRoute,
 } as any)
+const LayoutRoomsRoomIdIndexRoute = LayoutRoomsRoomIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LayoutRoomsRoomIdRoute,
+} as any)
+const LayoutRoomsRoomIdHistoryRoute =
+  LayoutRoomsRoomIdHistoryRouteImport.update({
+    id: '/history',
+    path: '/history',
+    getParentRoute: () => LayoutRoomsRoomIdRoute,
+  } as any)
 const LayoutRoomsRoomIdEditRoute = LayoutRoomsRoomIdEditRouteImport.update({
   id: '/edit',
   path: '/edit',
@@ -123,12 +142,15 @@ export interface FileRoutesByFullPath {
   '/auth/callback': typeof AuthCallbackRoute
   '/bookings/$bookingId': typeof LayoutBookingsBookingIdRoute
   '/bookings/add': typeof LayoutBookingsAddRoute
+  '/bookings/approvals': typeof LayoutBookingsApprovalsRoute
   '/bookings/my': typeof LayoutBookingsMyRoute
   '/rooms/$roomId': typeof LayoutRoomsRoomIdRouteWithChildren
   '/rooms/add': typeof LayoutRoomsAddRoute
   '/bookings/': typeof LayoutBookingsIndexRoute
   '/rooms/': typeof LayoutRoomsIndexRoute
   '/rooms/$roomId/edit': typeof LayoutRoomsRoomIdEditRoute
+  '/rooms/$roomId/history': typeof LayoutRoomsRoomIdHistoryRoute
+  '/rooms/$roomId/': typeof LayoutRoomsRoomIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
@@ -139,12 +161,14 @@ export interface FileRoutesByTo {
   '/': typeof LayoutIndexRoute
   '/bookings/$bookingId': typeof LayoutBookingsBookingIdRoute
   '/bookings/add': typeof LayoutBookingsAddRoute
+  '/bookings/approvals': typeof LayoutBookingsApprovalsRoute
   '/bookings/my': typeof LayoutBookingsMyRoute
-  '/rooms/$roomId': typeof LayoutRoomsRoomIdRouteWithChildren
   '/rooms/add': typeof LayoutRoomsAddRoute
   '/bookings': typeof LayoutBookingsIndexRoute
   '/rooms': typeof LayoutRoomsIndexRoute
   '/rooms/$roomId/edit': typeof LayoutRoomsRoomIdEditRoute
+  '/rooms/$roomId/history': typeof LayoutRoomsRoomIdHistoryRoute
+  '/rooms/$roomId': typeof LayoutRoomsRoomIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -159,12 +183,15 @@ export interface FileRoutesById {
   '/_layout/': typeof LayoutIndexRoute
   '/_layout/bookings/$bookingId': typeof LayoutBookingsBookingIdRoute
   '/_layout/bookings/add': typeof LayoutBookingsAddRoute
+  '/_layout/bookings/approvals': typeof LayoutBookingsApprovalsRoute
   '/_layout/bookings/my': typeof LayoutBookingsMyRoute
   '/_layout/rooms/$roomId': typeof LayoutRoomsRoomIdRouteWithChildren
   '/_layout/rooms/add': typeof LayoutRoomsAddRoute
   '/_layout/bookings/': typeof LayoutBookingsIndexRoute
   '/_layout/rooms/': typeof LayoutRoomsIndexRoute
   '/_layout/rooms/$roomId/edit': typeof LayoutRoomsRoomIdEditRoute
+  '/_layout/rooms/$roomId/history': typeof LayoutRoomsRoomIdHistoryRoute
+  '/_layout/rooms/$roomId/': typeof LayoutRoomsRoomIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -179,12 +206,15 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/bookings/$bookingId'
     | '/bookings/add'
+    | '/bookings/approvals'
     | '/bookings/my'
     | '/rooms/$roomId'
     | '/rooms/add'
     | '/bookings/'
     | '/rooms/'
     | '/rooms/$roomId/edit'
+    | '/rooms/$roomId/history'
+    | '/rooms/$roomId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/forgot-password'
@@ -195,12 +225,14 @@ export interface FileRouteTypes {
     | '/'
     | '/bookings/$bookingId'
     | '/bookings/add'
+    | '/bookings/approvals'
     | '/bookings/my'
-    | '/rooms/$roomId'
     | '/rooms/add'
     | '/bookings'
     | '/rooms'
     | '/rooms/$roomId/edit'
+    | '/rooms/$roomId/history'
+    | '/rooms/$roomId'
   id:
     | '__root__'
     | '/_layout'
@@ -214,12 +246,15 @@ export interface FileRouteTypes {
     | '/_layout/'
     | '/_layout/bookings/$bookingId'
     | '/_layout/bookings/add'
+    | '/_layout/bookings/approvals'
     | '/_layout/bookings/my'
     | '/_layout/rooms/$roomId'
     | '/_layout/rooms/add'
     | '/_layout/bookings/'
     | '/_layout/rooms/'
     | '/_layout/rooms/$roomId/edit'
+    | '/_layout/rooms/$roomId/history'
+    | '/_layout/rooms/$roomId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -330,6 +365,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutBookingsMyRouteImport
       parentRoute: typeof LayoutBookingsRouteRoute
     }
+    '/_layout/bookings/approvals': {
+      id: '/_layout/bookings/approvals'
+      path: '/approvals'
+      fullPath: '/bookings/approvals'
+      preLoaderRoute: typeof LayoutBookingsApprovalsRouteImport
+      parentRoute: typeof LayoutBookingsRouteRoute
+    }
     '/_layout/bookings/add': {
       id: '/_layout/bookings/add'
       path: '/add'
@@ -344,6 +386,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutBookingsBookingIdRouteImport
       parentRoute: typeof LayoutBookingsRouteRoute
     }
+    '/_layout/rooms/$roomId/': {
+      id: '/_layout/rooms/$roomId/'
+      path: '/'
+      fullPath: '/rooms/$roomId/'
+      preLoaderRoute: typeof LayoutRoomsRoomIdIndexRouteImport
+      parentRoute: typeof LayoutRoomsRoomIdRoute
+    }
+    '/_layout/rooms/$roomId/history': {
+      id: '/_layout/rooms/$roomId/history'
+      path: '/history'
+      fullPath: '/rooms/$roomId/history'
+      preLoaderRoute: typeof LayoutRoomsRoomIdHistoryRouteImport
+      parentRoute: typeof LayoutRoomsRoomIdRoute
+    }
     '/_layout/rooms/$roomId/edit': {
       id: '/_layout/rooms/$roomId/edit'
       path: '/edit'
@@ -357,6 +413,7 @@ declare module '@tanstack/react-router' {
 interface LayoutBookingsRouteRouteChildren {
   LayoutBookingsBookingIdRoute: typeof LayoutBookingsBookingIdRoute
   LayoutBookingsAddRoute: typeof LayoutBookingsAddRoute
+  LayoutBookingsApprovalsRoute: typeof LayoutBookingsApprovalsRoute
   LayoutBookingsMyRoute: typeof LayoutBookingsMyRoute
   LayoutBookingsIndexRoute: typeof LayoutBookingsIndexRoute
 }
@@ -364,6 +421,7 @@ interface LayoutBookingsRouteRouteChildren {
 const LayoutBookingsRouteRouteChildren: LayoutBookingsRouteRouteChildren = {
   LayoutBookingsBookingIdRoute: LayoutBookingsBookingIdRoute,
   LayoutBookingsAddRoute: LayoutBookingsAddRoute,
+  LayoutBookingsApprovalsRoute: LayoutBookingsApprovalsRoute,
   LayoutBookingsMyRoute: LayoutBookingsMyRoute,
   LayoutBookingsIndexRoute: LayoutBookingsIndexRoute,
 }
@@ -373,10 +431,14 @@ const LayoutBookingsRouteRouteWithChildren =
 
 interface LayoutRoomsRoomIdRouteChildren {
   LayoutRoomsRoomIdEditRoute: typeof LayoutRoomsRoomIdEditRoute
+  LayoutRoomsRoomIdHistoryRoute: typeof LayoutRoomsRoomIdHistoryRoute
+  LayoutRoomsRoomIdIndexRoute: typeof LayoutRoomsRoomIdIndexRoute
 }
 
 const LayoutRoomsRoomIdRouteChildren: LayoutRoomsRoomIdRouteChildren = {
   LayoutRoomsRoomIdEditRoute: LayoutRoomsRoomIdEditRoute,
+  LayoutRoomsRoomIdHistoryRoute: LayoutRoomsRoomIdHistoryRoute,
+  LayoutRoomsRoomIdIndexRoute: LayoutRoomsRoomIdIndexRoute,
 }
 
 const LayoutRoomsRoomIdRouteWithChildren =

@@ -3,7 +3,7 @@ import {
     Loader2,
     DoorOpen,
     Clock2,
-    User as UserIcon,
+    User,
     CheckCircle2,
     XCircle,
     CalendarClock,
@@ -117,7 +117,8 @@ export function BookingApproval() {
                                             })} น.</span>
                                         </div>
 
-                                        <div className="flex items-center gap-1.5 text-slate-500 text-sm font-medium">                                            <UserIcon className="w-4 h-4 text-slate-400" />
+                                        <div className="flex items-center gap-1.5 text-slate-500 text-sm font-medium">
+                                            <User className="w-4 h-4 text-slate-400" />
                                             {booking.user?.name}
                                         </div>
                                     </div>
