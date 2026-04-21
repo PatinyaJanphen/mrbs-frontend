@@ -2,8 +2,11 @@
 export const API_ROUTES = {
     AUTH: {
         ME: '/auth/me',
+        LOGIN: '/auth/login',
         LOGOUT: '/auth/logout',
         GOOGLE_REDIRECT: '/auth/google/redirect',
+        FORGOT_PASSWORD: '/auth/forgot-password',
+        RESET_PASSWORD: '/auth/reset-password',
     },
     ROOMS: {
         LIST: '/rooms',

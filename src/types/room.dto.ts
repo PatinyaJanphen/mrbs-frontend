@@ -28,3 +28,9 @@ export interface PaginatedRooms {
     current_page: number
     last_page: number
 }
+
+export interface ApiResponse<T> {
+    success: boolean
+    data: T
+    message?: string
+}

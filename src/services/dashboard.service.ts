@@ -1,4 +1,5 @@
 import { apiClient } from '@/lib/axios'
+import type { ApiResponse } from '@/types'
 
 export interface DashboardStats {
     total_rooms: number
@@ -9,7 +10,7 @@ export interface DashboardStats {
 
 export const dashboardService = {
     getStats: async (): Promise<DashboardStats> => {
-        const { data } = await apiClient.get<DashboardStats>('/dashboard/stats')
-        return data
+        const { data } = await apiClient.get<ApiResponse<DashboardStats>>('/dashboard/stats')
+        return data.data
     },
 }

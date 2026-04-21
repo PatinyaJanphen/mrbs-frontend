@@ -8,6 +8,21 @@ export const authService = {
         return data
     },
 
+    loginWithEmail: async (data: Record<string, string>) => {
+        const response = await apiClient.post<{ message: string; token: string; user: AuthUser }>(API_ROUTES.AUTH.LOGIN, data);
+        return response.data;
+    },
+
+    forgotPassword: async (data: { email: string }) => {
+        const response = await apiClient.post<{ message: string }>(API_ROUTES.AUTH.FORGOT_PASSWORD, data);
+        return response.data;
+    },
+
+    resetPassword: async (data: Record<string, string>) => {
+        const response = await apiClient.post<{ message: string }>(API_ROUTES.AUTH.RESET_PASSWORD, data);
+        return response.data;
+    },
+
     logout: async (): Promise<void> => {
         await apiClient.post(API_ROUTES.AUTH.LOGOUT)
     },
