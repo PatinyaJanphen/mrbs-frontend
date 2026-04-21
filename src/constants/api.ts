@@ -23,5 +23,6 @@ export const API_ROUTES = {
         UPDATE: (id: number) => `/bookings/${id}`,
         CANCEL: (id: number) => `/bookings/${id}/cancel`,
         APPROVE: (id: number) => `/bookings/${id}/approve`,
+        REJECT: (id: number) => `/bookings/${id}/reject`,
     },
 } as const

@@ -42,6 +42,11 @@ export const bookingService = {
         return data.data
     },
 
+    reject: async (id: number): Promise<Booking> => {
+        const { data } = await apiClient.post<ApiResponse<Booking>>(API_ROUTES.BOOKINGS.REJECT(id))
+        return data.data
+    },
+
     update: async (id: number, payload: Partial<CreateBookingDto>): Promise<Booking> => {
         const { data } = await apiClient.put<ApiResponse<Booking>>(API_ROUTES.BOOKINGS.UPDATE(id), payload)
         return data.data

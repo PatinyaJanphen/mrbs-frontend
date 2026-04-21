@@ -7,11 +7,10 @@ import {
     User,
     LayoutDashboard,
     DoorOpen,
-    ClipboardList,
+    ClipboardCheck,
     Settings,
     ChevronRight,
     PanelLeftClose,
-    PanelLeftOpen,
 } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -32,6 +31,7 @@ const navItems = [
     { to: "/", label: "ภาพรวม", icon: LayoutDashboard, admin: false },
     { to: "/rooms", label: "ห้องประชุม", icon: DoorOpen },
     { to: "/bookings/my", label: "การจองของฉัน", icon: CalendarDays },
+    { to: "/bookings/approvals", label: "อนุมัติการจอง", icon: ClipboardCheck, admin: true },
 ]
 
 const bottomNavItems = [
