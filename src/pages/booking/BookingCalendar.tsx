@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { bookingService } from '@/services/booking.service'
+import { useMyBookings } from '@/hooks/queries/useBookings'
 import { Button } from '@/components/ui/button'
 import { useNavigate, Link } from '@tanstack/react-router'
 import {
@@ -269,10 +268,7 @@ export function BookingCalendar() {
         }
     }, [viewMode, currentDate])
 
-    const { data, isLoading } = useQuery({
-        queryKey: ['bookings-calendar', from, to],
-        queryFn: () => bookingService.myBookings({ from, to, per_page: 200 }),
-    })
+    const { data, isLoading } = useMyBookings({ from, to, per_page: 200 })
 
     const bookings: Booking[] = data?.data ?? []
 

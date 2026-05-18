@@ -9,9 +9,16 @@ import { FileQuestion } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import appCss from '../styles.css?url'
 import type { QueryClient } from '@tanstack/react-query'
+import type { AuthUser } from '@/lib/auth'
 
-interface MyRouterContext {
+export interface AuthContext {
+  isAuthenticated: boolean
+  user: AuthUser | null
+}
+
+export interface MyRouterContext {
   queryClient: QueryClient
+  auth: AuthContext
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
@@ -29,7 +36,20 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   notFoundComponent: NotFoundPage,
 })
 
+import { useEffect } from 'react'
+import { useRouter } from '@tanstack/react-router'
+
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const router = useRouter()
+
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      router.navigate({ to: '/login', search: { error: 'session_expired' } })
+    }
+    window.addEventListener('auth:unauthorized', handleUnauthorized)
+    return () => window.removeEventListener('auth:unauthorized', handleUnauthorized)
+  }, [router])
+
   return (
     <html lang="th" suppressHydrationWarning>
       <head>

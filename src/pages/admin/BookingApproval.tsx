@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
     Loader2,
     DoorOpen,
@@ -11,6 +11,7 @@ import {
     AlertCircle,
     AlertTriangle
 } from 'lucide-react'
+import { useBookings } from '@/hooks/queries/useBookings'
 import { bookingService } from '@/services/booking.service'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
@@ -27,10 +28,8 @@ import { Textarea } from '@/components/ui/textarea'
 export function BookingApproval() {
     const queryClient = useQueryClient()
 
-    const { data: bookingsData, isLoading, error } = useQuery({
-        queryKey: ['bookings', { status: 0 }],
-        queryFn: () => bookingService.list({ status: '0', per_page: 100 }),
-    })
+    const { data: bookingsData, isLoading, error } = useBookings({ status: '0', per_page: 100 })
+
 
     const [isApproveDialogOpen, setIsApproveDialogOpen] = useState(false)
     const [selectedApproveBookingId, setSelectedApproveBookingId] = useState<number | null>(null)

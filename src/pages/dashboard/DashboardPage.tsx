@@ -1,14 +1,11 @@
 import { Building2, CalendarDays, Clock, Users } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
-import { dashboardService } from '@/services/dashboard.service'
+import { useDashboardStats } from '@/hooks/queries/useDashboard'
 import { useAuth } from '@/hooks/useAuth'
 
 export function DashboardPage() {
     const { isAdmin } = useAuth()
 
-    const { data: statsData, isLoading, error } = useQuery({
-        queryKey: ['dashboard-stats'],
-        queryFn: () => dashboardService.getStats(),
+    const { data: statsData, isLoading, error } = useDashboardStats({
         enabled: isAdmin, // Only run query if admin
     })
 

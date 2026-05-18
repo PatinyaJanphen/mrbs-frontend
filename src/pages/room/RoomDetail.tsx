@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { roomService } from '@/services/room.service'
+import { useRoom } from '@/hooks/queries/useRooms'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, Loader2, XCircle, Building2, CalendarPlus, Edit2 } from 'lucide-react'
-import { useNavigate, useLocation, Link, useParams } from '@tanstack/react-router'
+import { useNavigate, Link, useParams } from '@tanstack/react-router'
 import { toast } from 'sonner'
 
 import { useAuth } from '@/hooks/useAuth'
@@ -20,9 +21,7 @@ export function RoomDetail() {
     const { roomId: roomIdStr } = useParams({ from: '/_layout/rooms/$roomId' })
     const roomId = Number(roomIdStr)
 
-    const { data: room, isLoading, error } = useQuery({
-        queryKey: ['room', roomId],
-        queryFn: () => roomService.get(roomId),
+    const { data: room, isLoading, error } = useRoom(roomId, {
         enabled: !!roomId,
     })
 

@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { Building, Loader2 } from 'lucide-react'
 import { setAuth } from '../lib/auth'
-import { api } from '../lib/api'
+import { apiClient } from '../lib/axios'
 
 export const Route = createFileRoute('/auth/callback')({
     component: AuthCallbackPage,
@@ -26,10 +26,12 @@ function AuthCallbackPage() {
 
         async function fetchProfile() {
             try {
-                // temporarily set token for api interceptor to work
-                localStorage.setItem('mrbs_token', token!)
-
-                const user = await api.get<any>('/auth/me')
+                const response = await apiClient.get<any>('/auth/me', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                })
+                const user = response.data
 
                 // Now overwrite with properly structured user object if needed,
                 // or just store what API returns
@@ -50,6 +52,7 @@ function AuthCallbackPage() {
                 setTimeout(() => navigate({ to: '/login' }), 2000)
             }
         }
+
 
         fetchProfile()
     }, [navigate])

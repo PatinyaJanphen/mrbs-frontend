@@ -1,5 +1,7 @@
 import { useState } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useBooking } from '@/hooks/queries/useBookings'
+import { useRooms } from '@/hooks/queries/useRooms'
 import { bookingService } from '@/services/booking.service'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, Loader2, XCircle, Clock, CheckCircle2, Ban, CalendarClock, Album } from 'lucide-react'
@@ -9,7 +11,6 @@ import { toast } from 'sonner'
 
 import { useAuth } from '@/hooks/useAuth'
 import { BookingForm } from './components/BookingForm'
-import { roomService } from '@/services/room.service'
 import type { CreateBookingDto } from '@/types/booking.dto'
 import {
     Dialog,
@@ -33,16 +34,12 @@ export function BookingDetail() {
     const idParam = location.pathname.split('/').pop()
     const bookingId = idParam ? parseInt(idParam, 10) : 0
 
-    const { data: booking, isLoading, error } = useQuery({
-        queryKey: ['booking', bookingId],
-        queryFn: () => bookingService.get(bookingId),
+    const { data: booking, isLoading, error } = useBooking(bookingId, {
         enabled: !!bookingId,
     })
 
-    const { data: roomsData, isLoading: isLoadingRooms } = useQuery({
-        queryKey: ['rooms'],
-        queryFn: () => roomService.list({ per_page: 100 }),
-    })
+    const { data: roomsData, isLoading: isLoadingRooms } = useRooms({ per_page: 100 })
+
 
     const updateMutation = useMutation({
         mutationFn: (data: CreateBookingDto) => bookingService.update(bookingId, data),

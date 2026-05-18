@@ -1,46 +1,27 @@
-import type { UserRole } from '@/constants/app'
+import { useAuthStore, type AuthUser } from "@/stores/auth.store";
 
-const TOKEN_KEY = 'mrbs_token'
-const USER_KEY = 'mrbs_user'
-
-export interface AuthUser {
-    id: number
-    name: string
-    email: string
-    avatar?: string
-    role: UserRole
-    company_id: number
-}
+export type { AuthUser };
 
 export function getToken(): string | null {
-    if (typeof window === 'undefined') return null
-    return localStorage.getItem(TOKEN_KEY)
+  return useAuthStore.getState().token;
 }
 
 export function getUser(): AuthUser | null {
-    if (typeof window === 'undefined') return null
-    try {
-        const raw = localStorage.getItem(USER_KEY)
-        return raw ? JSON.parse(raw) : null
-    } catch {
-        return null
-    }
+  return useAuthStore.getState().user;
 }
 
 export function setAuth(token: string, user: AuthUser) {
-    localStorage.setItem(TOKEN_KEY, token)
-    localStorage.setItem(USER_KEY, JSON.stringify(user))
+  useAuthStore.getState().setAuth(token, user);
 }
 
 export function clearAuth() {
-    localStorage.removeItem(TOKEN_KEY)
-    localStorage.removeItem(USER_KEY)
+  useAuthStore.getState().clearAuth();
 }
 
 export function isAuthenticated(): boolean {
-    return !!getToken()
+  return useAuthStore.getState().isAuthenticated();
 }
 
 export function getUserId(): number | null {
-    return getUser()?.id ?? null
+  return getUser()?.id ?? null;
 }

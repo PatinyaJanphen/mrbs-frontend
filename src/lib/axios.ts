@@ -1,57 +1,56 @@
-import axios from 'axios'
-import { toast } from 'sonner'
-import { clearAuth, getToken } from './auth'
+import axios from "axios";
+import { toast } from "sonner";
+import { clearAuth, getToken } from "./auth";
 
 export const apiClient = axios.create({
-    baseURL: `${import.meta.env.VITE_API_URL ?? 'http://localhost:8000'}/api`,
-    timeout: 15000,
-    headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-    },
-})
+  baseURL: `${import.meta.env.VITE_API_URL ?? "http://localhost:8000"}/api`,
+  timeout: 15000,
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  },
+});
 
 // ─── Request Interceptor ─────────────────────────────────────────────────────
-// ใส่ Authorization header อัตโนมัติทุก request
 apiClient.interceptors.request.use((config) => {
-    const token = getToken()
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-})
+  const token = getToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 // ─── Response Interceptor ────────────────────────────────────────────────────
 apiClient.interceptors.response.use(
-    (response) => response,
+  (response) => response,
 
-    (error) => {
-        if (axios.isAxiosError(error)) {
-            const status = error.response?.status
-            const message = error.response?.data?.message as string | undefined
+  (error) => {
+    if (axios.isAxiosError(error)) {
+      const status = error.response?.status;
+      const message = error.response?.data?.message as string | undefined;
 
-            if (status === 401) {
-                // Token expired or invalid
-                clearAuth()
-                if (typeof window !== 'undefined') {
-                    window.location.href = '/login?error=session_expired'
-                }
-                return Promise.reject(error)
-            }
-
-            if (status === 403) {
-                toast.error('คุณไม่มีสิทธิ์ในการดำเนินการนี้')
-            } else if (status === 422) {
-                //
-            } else if (status && status >= 500) {
-                toast.error('เกิดข้อผิดพลาดที่ฝั่ง Server กรุณาลองอีกครั้ง')
-            } else if (message) {
-                toast.error(message)
-            }
-        } else if (error.code === 'ERR_NETWORK') {
-            toast.error('ไม่สามารถเชื่อมต่อ Server ได้ กรุณาตรวจสอบการเชื่อมต่อ')
+      if (status === 401) {
+        // Token expired or invalid
+        clearAuth();
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("auth:unauthorized"));
         }
+        return Promise.reject(error);
+      }
 
-        return Promise.reject(error)
-    },
-)
+      if (status === 403) {
+        toast.error("คุณไม่มีสิทธิ์ในการดำเนินการนี้");
+      } else if (status === 422) {
+        //
+      } else if (status && status >= 500) {
+        toast.error("เกิดข้อผิดพลาดกรุณาลองอีกครั้ง");
+      } else if (message) {
+        toast.error(message);
+      }
+    } else if (error.code === "ERR_NETWORK") {
+      toast.error("ไม่สามารถเชื่อมต่อได้");
+    }
+
+    return Promise.reject(error);
+  },
+);

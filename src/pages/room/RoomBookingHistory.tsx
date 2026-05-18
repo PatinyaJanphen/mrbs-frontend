@@ -1,7 +1,6 @@
-import { useQuery } from '@tanstack/react-query'
 import { useParams, useNavigate } from '@tanstack/react-router'
-import { bookingService } from '@/services/booking.service'
-import { roomService } from '@/services/room.service'
+import { useRoom } from '@/hooks/queries/useRooms'
+import { useBookings } from '@/hooks/queries/useBookings'
 import {
     History,
     ArrowLeft,
@@ -23,15 +22,11 @@ export function RoomBookingHistory() {
     const roomId = Number(roomIdStr)
     const navigate = useNavigate()
 
-    const { data: room } = useQuery({
-        queryKey: ['room', roomId],
-        queryFn: () => roomService.get(roomId),
+    const { data: room } = useRoom(roomId, {
         enabled: !!roomId
     })
 
-    const { data: bookingsData, isLoading, error } = useQuery({
-        queryKey: ['room-history', roomId],
-        queryFn: () => bookingService.list({ resource_id: roomId }),
+    const { data: bookingsData, isLoading, error } = useBookings({ resource_id: roomId }, {
         enabled: !!roomId
     })
 

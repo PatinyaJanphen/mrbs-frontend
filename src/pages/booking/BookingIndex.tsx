@@ -1,5 +1,5 @@
-import { useQuery, useMutation } from '@tanstack/react-query'
-import { roomService } from '@/services/room.service'
+import { useMutation } from '@tanstack/react-query'
+import { useRooms } from '@/hooks/queries/useRooms'
 import { bookingService } from '@/services/booking.service'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
@@ -13,10 +13,7 @@ export function BookingIndex() {
     const navigate = useNavigate()
     const [isSubmitting, setIsSubmitting] = useState(false)
 
-    const { data: roomsData, isLoading: isLoading } = useQuery({
-        queryKey: ['rooms'],
-        queryFn: () => roomService.list({ per_page: 100 }),
-    })
+    const { data: roomsData, isLoading: isLoading } = useRooms({ per_page: 100 })
 
     const createMutation = useMutation({
         mutationFn: (data: CreateBookingDto) => bookingService.create(data),

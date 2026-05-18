@@ -1,6 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
 import { DoorOpen, Loader2, Search, Plus, Armchair, ReceiptText, History } from 'lucide-react'
-import { roomService } from '@/services/room.service'
+import { useRooms } from '@/hooks/queries/useRooms'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useState, useEffect } from 'react'
@@ -23,10 +22,7 @@ export function RoomsPage() {
     const { isAdmin, isSuperAdmin } = useAuth()
     const { isExpanded, toggleExpand } = useExpandedRooms()
 
-    const { data: roomsData, isLoading, error } = useQuery({
-        queryKey: ['rooms', { search, page }],
-        queryFn: () => roomService.list({ search, page, per_page: 10 }),
-    })
+    const { data: roomsData, isLoading, error } = useRooms({ search, page, per_page: 10 })
 
     useEffect(() => {
         setPage(1)

@@ -1,6 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
 import { Loader2, Clock, ChevronDown, CalendarDays } from 'lucide-react'
-import { bookingService } from '@/services/booking.service'
+import { useBookings } from '@/hooks/queries/useBookings'
 import { useState, useMemo } from 'react'
 import { BOOKING_STATUS } from '@/constants/app'
 import type { Booking } from '@/types'
@@ -134,10 +133,7 @@ export function TodayTimeline({ roomId }: { roomId: number }) {
 
     const todayKey = formatDateKey(today)
 
-    const { data: bookingsData, isLoading } = useQuery({
-        queryKey: ['bookings', 'room-timeline-today', roomId, todayKey],
-        queryFn: () => bookingService.list({ resource_id: roomId, from: todayKey, to: todayKey, per_page: 50 }),
-    })
+    const { data: bookingsData, isLoading } = useBookings({ resource_id: roomId, from: todayKey, to: todayKey, per_page: 50 })
 
     const todayBookings = useMemo(() => {
         return (bookingsData?.data ?? []).filter(b => {
@@ -206,14 +202,11 @@ function FutureDaysContent({ roomId }: { roomId: number }) {
         return { startDate: start, endDate: end, futureDates: dates }
     }, [])
 
-    const { data: bookingsData, isLoading } = useQuery({
-        queryKey: ['bookings', 'room-timeline-future', roomId, formatDateKey(startDate)],
-        queryFn: () => bookingService.list({
-            resource_id: roomId,
-            from: formatDateKey(startDate),
-            to: formatDateKey(endDate),
-            per_page: 100,
-        }),
+    const { data: bookingsData, isLoading } = useBookings({
+        resource_id: roomId,
+        from: formatDateKey(startDate),
+        to: formatDateKey(endDate),
+        per_page: 100,
     })
 
     const bookingsByDate = useMemo(() => {
@@ -329,9 +322,7 @@ export function RoomDayTimeline({ roomId, date, label }: { roomId: number, date?
     const dateKey = useMemo(() => date ? formatDateKey(date) : formatDateKey(new Date()), [date])
     const dateLabel = useMemo(() => date ? formatDateLabel(date) : 'วันนี้', [date])
 
-    const { data: bookingsData, isLoading } = useQuery({
-        queryKey: ['bookings', 'room-day-timeline', roomId, dateKey],
-        queryFn: () => bookingService.list({ resource_id: roomId, from: dateKey, to: dateKey, per_page: 50 }),
+    const { data: bookingsData, isLoading } = useBookings({ resource_id: roomId, from: dateKey, to: dateKey, per_page: 50 }, {
         enabled: !!roomId,
     })
 

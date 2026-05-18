@@ -1,6 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
 import { ClipboardList, Loader2, CalendarPlus, Filter, DoorOpen, Clock2, Info } from 'lucide-react'
-import { bookingService } from '@/services/booking.service'
+import { useBookings, useMyBookings } from '@/hooks/queries/useBookings'
 import { Button } from '@/components/ui/button'
 import { useRouterState, Link } from '@tanstack/react-router'
 import { useNavigate } from '@tanstack/react-router'
@@ -16,10 +15,13 @@ export function BookingTable({ myOnly = false }: BookingTableProps) {
     // Check if we are on "My Bookings" path if prop not explicitly provided
     const isMyBookings = myOnly || routerState.location.pathname.includes('/my')
 
-    const { data: bookingsData, isLoading, error } = useQuery({
-        queryKey: ['bookings', { isMyBookings }],
-        queryFn: () => isMyBookings ? bookingService.myBookings() : bookingService.list(),
-    })
+    const { data: bookingsDataAll, isLoading: isLoadingAll, error: errorAll } = useBookings({}, { enabled: !isMyBookings })
+    const { data: bookingsDataMy, isLoading: isLoadingMy, error: errorMy } = useMyBookings({}, { enabled: isMyBookings })
+
+    const bookingsData = isMyBookings ? bookingsDataMy : bookingsDataAll
+    const isLoading = isMyBookings ? isLoadingMy : isLoadingAll
+    const error = isMyBookings ? errorMy : errorAll
+
 
     const bookings = bookingsData?.data ?? []
 
