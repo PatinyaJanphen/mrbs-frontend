@@ -8,6 +8,7 @@ import {
     LayoutDashboard,
     DoorOpen,
     ClipboardCheck,
+    ClipboardList,
     Settings,
     ChevronRight,
     PanelLeftClose,
@@ -31,7 +32,8 @@ import { useAuth } from "@/hooks/useAuth"
 const navItems = [
     { to: "/", label: "ภาพรวม", icon: LayoutDashboard, admin: false },
     { to: "/rooms", label: "ห้องประชุม", icon: DoorOpen },
-    { to: "/bookings/my", label: "การจองของฉัน", icon: CalendarDays },
+    { to: "/bookings/calendar", label: "ปฏิทินการจอง", icon: CalendarDays },
+    { to: "/bookings/my", label: "การจองของฉัน", icon: ClipboardList },
     { to: "/bookings/approvals", label: "อนุมัติการจอง", icon: ClipboardCheck, admin: true },
 ]
 

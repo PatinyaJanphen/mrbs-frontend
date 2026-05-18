@@ -23,6 +23,7 @@ import { Route as LayoutBookingsIndexRouteImport } from './routes/_layout/bookin
 import { Route as LayoutRoomsAddRouteImport } from './routes/_layout/rooms/add'
 import { Route as LayoutRoomsRoomIdRouteImport } from './routes/_layout/rooms/$roomId'
 import { Route as LayoutBookingsMyRouteImport } from './routes/_layout/bookings/my'
+import { Route as LayoutBookingsCalendarRouteImport } from './routes/_layout/bookings/calendar'
 import { Route as LayoutBookingsApprovalsRouteImport } from './routes/_layout/bookings/approvals'
 import { Route as LayoutBookingsAddRouteImport } from './routes/_layout/bookings/add'
 import { Route as LayoutBookingsBookingIdRouteImport } from './routes/_layout/bookings/$bookingId'
@@ -99,6 +100,11 @@ const LayoutBookingsMyRoute = LayoutBookingsMyRouteImport.update({
   path: '/my',
   getParentRoute: () => LayoutBookingsRouteRoute,
 } as any)
+const LayoutBookingsCalendarRoute = LayoutBookingsCalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
+  getParentRoute: () => LayoutBookingsRouteRoute,
+} as any)
 const LayoutBookingsApprovalsRoute = LayoutBookingsApprovalsRouteImport.update({
   id: '/approvals',
   path: '/approvals',
@@ -143,6 +149,7 @@ export interface FileRoutesByFullPath {
   '/bookings/$bookingId': typeof LayoutBookingsBookingIdRoute
   '/bookings/add': typeof LayoutBookingsAddRoute
   '/bookings/approvals': typeof LayoutBookingsApprovalsRoute
+  '/bookings/calendar': typeof LayoutBookingsCalendarRoute
   '/bookings/my': typeof LayoutBookingsMyRoute
   '/rooms/$roomId': typeof LayoutRoomsRoomIdRouteWithChildren
   '/rooms/add': typeof LayoutRoomsAddRoute
@@ -162,6 +169,7 @@ export interface FileRoutesByTo {
   '/bookings/$bookingId': typeof LayoutBookingsBookingIdRoute
   '/bookings/add': typeof LayoutBookingsAddRoute
   '/bookings/approvals': typeof LayoutBookingsApprovalsRoute
+  '/bookings/calendar': typeof LayoutBookingsCalendarRoute
   '/bookings/my': typeof LayoutBookingsMyRoute
   '/rooms/add': typeof LayoutRoomsAddRoute
   '/bookings': typeof LayoutBookingsIndexRoute
@@ -184,6 +192,7 @@ export interface FileRoutesById {
   '/_layout/bookings/$bookingId': typeof LayoutBookingsBookingIdRoute
   '/_layout/bookings/add': typeof LayoutBookingsAddRoute
   '/_layout/bookings/approvals': typeof LayoutBookingsApprovalsRoute
+  '/_layout/bookings/calendar': typeof LayoutBookingsCalendarRoute
   '/_layout/bookings/my': typeof LayoutBookingsMyRoute
   '/_layout/rooms/$roomId': typeof LayoutRoomsRoomIdRouteWithChildren
   '/_layout/rooms/add': typeof LayoutRoomsAddRoute
@@ -207,6 +216,7 @@ export interface FileRouteTypes {
     | '/bookings/$bookingId'
     | '/bookings/add'
     | '/bookings/approvals'
+    | '/bookings/calendar'
     | '/bookings/my'
     | '/rooms/$roomId'
     | '/rooms/add'
@@ -226,6 +236,7 @@ export interface FileRouteTypes {
     | '/bookings/$bookingId'
     | '/bookings/add'
     | '/bookings/approvals'
+    | '/bookings/calendar'
     | '/bookings/my'
     | '/rooms/add'
     | '/bookings'
@@ -247,6 +258,7 @@ export interface FileRouteTypes {
     | '/_layout/bookings/$bookingId'
     | '/_layout/bookings/add'
     | '/_layout/bookings/approvals'
+    | '/_layout/bookings/calendar'
     | '/_layout/bookings/my'
     | '/_layout/rooms/$roomId'
     | '/_layout/rooms/add'
@@ -365,6 +377,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutBookingsMyRouteImport
       parentRoute: typeof LayoutBookingsRouteRoute
     }
+    '/_layout/bookings/calendar': {
+      id: '/_layout/bookings/calendar'
+      path: '/calendar'
+      fullPath: '/bookings/calendar'
+      preLoaderRoute: typeof LayoutBookingsCalendarRouteImport
+      parentRoute: typeof LayoutBookingsRouteRoute
+    }
     '/_layout/bookings/approvals': {
       id: '/_layout/bookings/approvals'
       path: '/approvals'
@@ -414,6 +433,7 @@ interface LayoutBookingsRouteRouteChildren {
   LayoutBookingsBookingIdRoute: typeof LayoutBookingsBookingIdRoute
   LayoutBookingsAddRoute: typeof LayoutBookingsAddRoute
   LayoutBookingsApprovalsRoute: typeof LayoutBookingsApprovalsRoute
+  LayoutBookingsCalendarRoute: typeof LayoutBookingsCalendarRoute
   LayoutBookingsMyRoute: typeof LayoutBookingsMyRoute
   LayoutBookingsIndexRoute: typeof LayoutBookingsIndexRoute
 }
@@ -422,6 +442,7 @@ const LayoutBookingsRouteRouteChildren: LayoutBookingsRouteRouteChildren = {
   LayoutBookingsBookingIdRoute: LayoutBookingsBookingIdRoute,
   LayoutBookingsAddRoute: LayoutBookingsAddRoute,
   LayoutBookingsApprovalsRoute: LayoutBookingsApprovalsRoute,
+  LayoutBookingsCalendarRoute: LayoutBookingsCalendarRoute,
   LayoutBookingsMyRoute: LayoutBookingsMyRoute,
   LayoutBookingsIndexRoute: LayoutBookingsIndexRoute,
 }
