@@ -11,6 +11,7 @@ import {
     Settings,
     ChevronRight,
     PanelLeftClose,
+    PanelLeftOpen,
 } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
