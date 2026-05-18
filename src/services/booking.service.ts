@@ -42,8 +42,8 @@ export const bookingService = {
         return data.data
     },
 
-    reject: async (id: number): Promise<Booking> => {
-        const { data } = await apiClient.post<ApiResponse<Booking>>(API_ROUTES.BOOKINGS.REJECT(id))
+    reject: async (id: number, reject_reason?: string): Promise<Booking> => {
+        const { data } = await apiClient.post<ApiResponse<Booking>>(API_ROUTES.BOOKINGS.REJECT(id), { reject_reason })
         return data.data
     },
 

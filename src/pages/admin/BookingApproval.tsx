@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
     Loader2,
@@ -7,11 +8,21 @@ import {
     CheckCircle2,
     XCircle,
     CalendarClock,
-    AlertCircle
+    AlertCircle,
+    AlertTriangle
 } from 'lucide-react'
 import { bookingService } from '@/services/booking.service'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog'
+import { Textarea } from '@/components/ui/textarea'
 
 export function BookingApproval() {
     const queryClient = useQueryClient()
@@ -21,22 +32,34 @@ export function BookingApproval() {
         queryFn: () => bookingService.list({ status: '0', per_page: 100 }),
     })
 
+    const [isApproveDialogOpen, setIsApproveDialogOpen] = useState(false)
+    const [selectedApproveBookingId, setSelectedApproveBookingId] = useState<number | null>(null)
+
     const approveMutation = useMutation({
         mutationFn: (id: number) => bookingService.approve(id),
         onSuccess: () => {
             toast.success('อนุมัติการจองเรียบร้อยแล้ว')
             queryClient.invalidateQueries({ queryKey: ['bookings'] })
+            setIsApproveDialogOpen(false)
+            setSelectedApproveBookingId(null)
         },
         onError: (err: any) => {
             toast.error(err?.response?.data?.message || 'เกิดข้อผิดพลาดในการอนุมัติ')
         }
     })
 
+    const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false)
+    const [rejectReason, setRejectReason] = useState('')
+    const [selectedBookingId, setSelectedBookingId] = useState<number | null>(null)
+
     const rejectMutation = useMutation({
-        mutationFn: (id: number) => bookingService.reject(id),
+        mutationFn: ({ id, reason }: { id: number; reason: string }) => bookingService.reject(id, reason),
         onSuccess: () => {
             toast.success('ปฏิเสธการจองเรียบร้อยแล้ว')
             queryClient.invalidateQueries({ queryKey: ['bookings'] })
+            setIsRejectDialogOpen(false)
+            setRejectReason('')
+            setSelectedBookingId(null)
         },
         onError: (err: any) => {
             toast.error(err?.response?.data?.message || 'เกิดข้อผิดพลาดในการปฏิเสธ')
@@ -126,12 +149,15 @@ export function BookingApproval() {
 
                                 <div className="flex items-center gap-3 lg:shrink-0 pt-4 lg:pt-0 border-t lg:border-none border-slate-50">
                                     <Button
-                                        onClick={() => rejectMutation.mutate(booking.id)}
+                                        onClick={() => {
+                                            setSelectedBookingId(booking.id)
+                                            setIsRejectDialogOpen(true)
+                                        }}
                                         disabled={rejectMutation.isPending || approveMutation.isPending}
                                         variant="outline"
                                         className="flex-1 lg:flex-none h-12 px-6 rounded-xl border-slate-200 text-red-500 hover:bg-red-50 hover:text-red-600 hover:border-red-200 font-bold transition-all gap-2"
                                     >
-                                        {rejectMutation.isPending && rejectMutation.variables === booking.id ? (
+                                        {rejectMutation.isPending && rejectMutation.variables?.id === booking.id ? (
                                             <Loader2 className="h-4 w-4 animate-spin" />
                                         ) : (
                                             <XCircle className="h-5 w-5" />
@@ -139,7 +165,10 @@ export function BookingApproval() {
                                         ปฏิเสธ
                                     </Button>
                                     <Button
-                                        onClick={() => approveMutation.mutate(booking.id)}
+                                        onClick={() => {
+                                            setSelectedApproveBookingId(booking.id)
+                                            setIsApproveDialogOpen(true)
+                                        }}
                                         disabled={approveMutation.isPending || rejectMutation.isPending}
                                         className="flex-1 lg:flex-none h-12 px-8 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold transition-all shadow-lg shadow-emerald-100 hover:shadow-emerald-200 gap-2"
                                     >
@@ -166,6 +195,109 @@ export function BookingApproval() {
                     </p>
                 </div>
             )}
+
+            <Dialog open={isRejectDialogOpen} onOpenChange={setIsRejectDialogOpen}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader className="pt-4 items-center gap-4 text-center">
+                        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                            <AlertTriangle className="w-8 h-8 text-red-600" />
+                        </div>
+                        <div className="space-y-1.5">
+                            <DialogTitle className="text-xl">ยืนยันปฏิเสธการจอง</DialogTitle>
+                            <DialogDescription className="text-slate-500">
+                                กรุณาระบุเหตุผลในการปฏิเสธคำขอการจองห้องประชุมนี้
+                            </DialogDescription>
+                        </div>
+                    </DialogHeader>
+
+                    <div className="py-2">
+                        <Textarea
+                            placeholder="ระบุเหตุผล"
+                            value={rejectReason}
+                            onChange={(e) => setRejectReason(e.target.value)}
+                            className="min-h-[100px] rounded-xl border-slate-200 focus:border-red-500 focus:ring-red-500"
+                        />
+                    </div>
+
+                    <DialogFooter className="mt-4 gap-3">
+                        <Button
+                            variant="ghost"
+                            onClick={() => {
+                                setIsRejectDialogOpen(false)
+                                setRejectReason('')
+                                setSelectedBookingId(null)
+                            }}
+                            className="flex-1 rounded-xl h-12"
+                            disabled={rejectMutation.isPending}
+                        >
+                            ยกเลิก
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            onClick={() => {
+                                if (selectedBookingId && rejectReason.trim()) {
+                                    rejectMutation.mutate({ id: selectedBookingId, reason: rejectReason })
+                                }
+                            }}
+                            className="flex-1 rounded-xl h-12 gap-2 shadow-lg shadow-red-100"
+                            disabled={rejectMutation.isPending || !rejectReason.trim()}
+                        >
+                            {rejectMutation.isPending ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                                <XCircle className="w-4 h-4" />
+                            )}
+                            ยืนยันปฏิเสธ
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={isApproveDialogOpen} onOpenChange={setIsApproveDialogOpen}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader className="pt-4 items-center gap-4 text-center">
+                        <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center">
+                            <CheckCircle2 className="w-8 h-8 text-emerald-600" />
+                        </div>
+                        <div className="space-y-1.5">
+                            <DialogTitle className="text-xl">ยืนยันอนุมัติการจอง</DialogTitle>
+                            <DialogDescription className="text-slate-500">
+                                คุณแน่ใจหรือไม่ว่าต้องการอนุมัติคำขอการจองห้องประชุมนี้
+                            </DialogDescription>
+                        </div>
+                    </DialogHeader>
+
+                    <DialogFooter className="mt-6 gap-3">
+                        <Button
+                            variant="ghost"
+                            onClick={() => {
+                                setIsApproveDialogOpen(false)
+                                setSelectedApproveBookingId(null)
+                            }}
+                            className="flex-1 rounded-xl h-12"
+                            disabled={approveMutation.isPending}
+                        >
+                            ยกเลิก
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                if (selectedApproveBookingId) {
+                                    approveMutation.mutate(selectedApproveBookingId)
+                                }
+                            }}
+                            className="flex-1 rounded-xl h-12 bg-emerald-500 hover:bg-emerald-600 text-white font-bold transition-all shadow-lg shadow-emerald-100 hover:shadow-emerald-200 gap-2"
+                            disabled={approveMutation.isPending}
+                        >
+                            {approveMutation.isPending ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                                <CheckCircle2 className="w-4 h-4" />
+                            )}
+                            ยืนยันอนุมัติ
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }
