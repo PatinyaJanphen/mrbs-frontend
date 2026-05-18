@@ -2,9 +2,9 @@ name: Frontend CI/CD
 
 on:
   push:
-    branches: ["main", "dev-1.0"]
+    branches: ["main", "dev-1.0", "dev-*"]
   pull_request:
-    branches: ["main", "dev-1.0"]
+    branches: ["main", "dev-1.0", "dev-*"]
 
 jobs:
   ci:
