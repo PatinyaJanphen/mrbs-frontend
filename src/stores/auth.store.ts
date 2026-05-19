@@ -9,6 +9,8 @@ export interface AuthUser {
     avatar?: string
     role: UserRole
     company_id: number
+    phone?: string
+    department?: string
 }
 
 interface AuthState {

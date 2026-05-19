@@ -15,6 +15,7 @@ import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as LayoutIndexRouteImport } from './routes/_layout/index'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
+import { Route as LayoutProfileRouteImport } from './routes/_layout/profile'
 import { Route as LayoutDashboardRouteImport } from './routes/_layout/dashboard'
 import { Route as LayoutRoomsRouteRouteImport } from './routes/_layout/rooms/route'
 import { Route as LayoutBookingsRouteRouteImport } from './routes/_layout/bookings/route'
@@ -59,6 +60,11 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
   id: '/auth/callback',
   path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
+} as any)
+const LayoutProfileRoute = LayoutProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => LayoutRoute,
 } as any)
 const LayoutDashboardRoute = LayoutDashboardRouteImport.update({
   id: '/dashboard',
@@ -145,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/bookings': typeof LayoutBookingsRouteRouteWithChildren
   '/rooms': typeof LayoutRoomsRouteRouteWithChildren
   '/dashboard': typeof LayoutDashboardRoute
+  '/profile': typeof LayoutProfileRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/bookings/$bookingId': typeof LayoutBookingsBookingIdRoute
   '/bookings/add': typeof LayoutBookingsAddRoute
@@ -164,6 +171,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof LayoutDashboardRoute
+  '/profile': typeof LayoutProfileRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/': typeof LayoutIndexRoute
   '/bookings/$bookingId': typeof LayoutBookingsBookingIdRoute
@@ -187,6 +195,7 @@ export interface FileRoutesById {
   '/_layout/bookings': typeof LayoutBookingsRouteRouteWithChildren
   '/_layout/rooms': typeof LayoutRoomsRouteRouteWithChildren
   '/_layout/dashboard': typeof LayoutDashboardRoute
+  '/_layout/profile': typeof LayoutProfileRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/_layout/': typeof LayoutIndexRoute
   '/_layout/bookings/$bookingId': typeof LayoutBookingsBookingIdRoute
@@ -212,6 +221,7 @@ export interface FileRouteTypes {
     | '/bookings'
     | '/rooms'
     | '/dashboard'
+    | '/profile'
     | '/auth/callback'
     | '/bookings/$bookingId'
     | '/bookings/add'
@@ -231,6 +241,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/dashboard'
+    | '/profile'
     | '/auth/callback'
     | '/'
     | '/bookings/$bookingId'
@@ -253,6 +264,7 @@ export interface FileRouteTypes {
     | '/_layout/bookings'
     | '/_layout/rooms'
     | '/_layout/dashboard'
+    | '/_layout/profile'
     | '/auth/callback'
     | '/_layout/'
     | '/_layout/bookings/$bookingId'
@@ -320,6 +332,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/callback'
       preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_layout/profile': {
+      id: '/_layout/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof LayoutProfileRouteImport
+      parentRoute: typeof LayoutRoute
     }
     '/_layout/dashboard': {
       id: '/_layout/dashboard'
@@ -484,6 +503,7 @@ interface LayoutRouteChildren {
   LayoutBookingsRouteRoute: typeof LayoutBookingsRouteRouteWithChildren
   LayoutRoomsRouteRoute: typeof LayoutRoomsRouteRouteWithChildren
   LayoutDashboardRoute: typeof LayoutDashboardRoute
+  LayoutProfileRoute: typeof LayoutProfileRoute
   LayoutIndexRoute: typeof LayoutIndexRoute
 }
 
@@ -491,6 +511,7 @@ const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutBookingsRouteRoute: LayoutBookingsRouteRouteWithChildren,
   LayoutRoomsRouteRoute: LayoutRoomsRouteRouteWithChildren,
   LayoutDashboardRoute: LayoutDashboardRoute,
+  LayoutProfileRoute: LayoutProfileRoute,
   LayoutIndexRoute: LayoutIndexRoute,
 }
 

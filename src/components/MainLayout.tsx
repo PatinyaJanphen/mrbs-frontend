@@ -167,9 +167,11 @@ export function MainLayout() {
                                 </div>
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem className="cursor-pointer">
-                                <User className="mr-2 h-4 w-4" />
-                                <span>โปรไฟล์</span>
+                            <DropdownMenuItem asChild className="cursor-pointer">
+                                <Link to="/profile">
+                                    <User className="mr-2 h-4 w-4" />
+                                    <span>โปรไฟล์</span>
+                                </Link>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600 focus:text-red-600">

@@ -7,6 +7,8 @@ export interface AuthUser {
     avatar?: string
     role: number
     company_id: number
+    phone?: string
+    department?: string
 }
 
 export interface LoginResponse {

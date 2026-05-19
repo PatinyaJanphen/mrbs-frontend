@@ -5,6 +5,10 @@ import { USER_ROLES } from '@/constants/app'
 
 export const Route = createFileRoute('/_layout/rooms/$roomId/edit')({
     beforeLoad: () => {
+        if (typeof window === 'undefined') {
+            return
+        }
+
         const user = getUser()
         // Allow both Admin and Super Admin
         const isAdmin = user?.role === USER_ROLES.ADMIN || user?.role === USER_ROLES.SUPER_ADMIN

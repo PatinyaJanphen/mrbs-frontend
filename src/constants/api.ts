@@ -25,4 +25,8 @@ export const API_ROUTES = {
         APPROVE: (id: number) => `/bookings/${id}/approve`,
         REJECT: (id: number) => `/bookings/${id}/reject`,
     },
+    PROFILE: {
+        UPDATE: '/profile',
+        UPDATE_PASSWORD: '/profile/password',
+    },
 } as const

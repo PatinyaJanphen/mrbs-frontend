@@ -9,7 +9,7 @@ import { authService } from '../services/auth.service'
 
 export const Route = createFileRoute('/login')({
     beforeLoad: () => {
-        if (isAuthenticated()) {
+        if (typeof window !== 'undefined' && isAuthenticated()) {
             throw redirect({ to: '/' })
         }
     },
