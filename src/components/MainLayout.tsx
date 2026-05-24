@@ -1,19 +1,5 @@
 import { Link, Outlet, useNavigate } from "@tanstack/react-router"
-import {
-    Building,
-    CalendarDays,
-    Home,
-    LogOut,
-    User,
-    LayoutDashboard,
-    DoorOpen,
-    ClipboardCheck,
-    ClipboardList,
-    Settings,
-    ChevronRight,
-    PanelLeftClose,
-    PanelLeftOpen,
-} from "lucide-react"
+import { Building, CalendarDays, Home, LogOut, User, LayoutDashboard, DoorOpen, ClipboardCheck, ClipboardList, Settings, ChevronRight, PanelLeftClose, PanelLeftOpen, Users, } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -35,6 +21,7 @@ const navItems = [
     { to: "/bookings/calendar", label: "ปฏิทินการจอง", icon: CalendarDays },
     { to: "/bookings/my", label: "การจองของฉัน", icon: ClipboardList },
     { to: "/bookings/approvals", label: "อนุมัติการจอง", icon: ClipboardCheck, admin: true },
+    { to: "/users", label: "จัดการผู้ใช้งาน", icon: Users, admin: true },
 ]
 
 const bottomNavItems = [

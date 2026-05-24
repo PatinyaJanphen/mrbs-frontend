@@ -1,6 +1,6 @@
-import { createFileRoute, redirect, Link } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { useState } from 'react'
-import { Building, Mail, Lock, Loader2 } from 'lucide-react'
+import { Building, Mail, Lock, Loader2, CircleAlert } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -18,6 +18,13 @@ export const Route = createFileRoute('/login')({
 
 const BACKEND_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
 
+function getLoginErrorMessage(error: unknown) {
+    const responseData = (error as { response?: { data?: { message?: string; errors?: Record<string, string[]> } } })?.response?.data
+    const fieldError = responseData?.errors?.email?.[0] ?? responseData?.errors?.password?.[0]
+
+    return fieldError || responseData?.message || 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'
+}
+
 function LoginPage() {
     const navigate = Route.useNavigate()
     const [email, setEmail] = useState('')
@@ -34,8 +41,8 @@ function LoginPage() {
             const data = await authService.loginWithEmail({ email, password })
             setAuth(data.token, data.user)
             navigate({ to: '/' })
-        } catch (err: any) {
-            setError('* อีเมลหรือรหัสผ่านไม่ถูกต้อง');
+        } catch (err) {
+            setError(getLoginErrorMessage(err))
         } finally {
             setIsLoading(false)
         }
@@ -120,7 +127,12 @@ function LoginPage() {
                             </div>
                         </div>
 
-                        {error && <p className="text-sm text-red-500 font-medium">{error}</p>}
+                        {error && (
+                            <div className="flex items-start gap-2 rounded-xl border border-red-100 bg-red-50 px-3 py-2.5 text-sm font-medium text-red-600">
+                                <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" />
+                                <span>{error}</span>
+                            </div>
+                        )}
 
                         <Button
                             type="submit"

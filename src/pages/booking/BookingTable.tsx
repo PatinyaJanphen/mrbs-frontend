@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { ClipboardList, Loader2, CalendarPlus, Filter, DoorOpen, Clock2, Info } from 'lucide-react'
 import { useBookings, useMyBookings } from '@/hooks/queries/useBookings'
 import { Button } from '@/components/ui/button'
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, } from '@/components/ui/pagination'
 import { useRouterState, Link } from '@tanstack/react-router'
 import { useNavigate } from '@tanstack/react-router'
 
@@ -15,15 +17,25 @@ export function BookingTable({ myOnly = false }: BookingTableProps) {
     // Check if we are on "My Bookings" path if prop not explicitly provided
     const isMyBookings = myOnly || routerState.location.pathname.includes('/my')
 
-    const { data: bookingsDataAll, isLoading: isLoadingAll, error: errorAll } = useBookings({}, { enabled: !isMyBookings })
-    const { data: bookingsDataMy, isLoading: isLoadingMy, error: errorMy } = useMyBookings({}, { enabled: isMyBookings })
+    const [page, setPage] = useState(1)
+
+    const { data: bookingsDataAll, isLoading: isLoadingAll, error: errorAll } = useBookings({ page, per_page: 10 }, { enabled: !isMyBookings })
+    const { data: bookingsDataMy, isLoading: isLoadingMy, error: errorMy } = useMyBookings({ page, per_page: 10 }, { enabled: isMyBookings })
 
     const bookingsData = isMyBookings ? bookingsDataMy : bookingsDataAll
     const isLoading = isMyBookings ? isLoadingMy : isLoadingAll
     const error = isMyBookings ? errorMy : errorAll
 
-
     const bookings = bookingsData?.data ?? []
+    const pagination = (bookingsData as any)?.meta ?? bookingsData
+    const totalPages = pagination?.last_page ?? 1
+
+    const handlePageChange = (p: number) => {
+        if (p >= 1 && p <= totalPages) {
+            setPage(p)
+            window.scrollTo({ top: 0, behavior: 'smooth' })
+        }
+    }
 
     return (
         <div className="space-y-8">
@@ -61,69 +73,108 @@ export function BookingTable({ myOnly = false }: BookingTableProps) {
                     <p className="text-red-400 text-sm mt-1">กรุณาลองใหม่อีกครั้ง</p>
                 </div>
             ) : bookings.length > 0 ? (
-                <div className="space-y-4">
-                    {bookings.map((booking: any) => (
-                        <div
-                            key={booking.id}
-                            className="bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-md hover:border-blue-100 transition-all group overflow-hidden"
-                            onClick={() => navigate({ to: '/bookings/$bookingId', params: { bookingId: booking.id.toString() } } as any)}
-                        >
-                            <div className="p-2 pl-6 flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer hover:bg-blue-50/10">
-                                <div className="flex items-center gap-6 py-4">
-                                    <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center group-hover:bg-blue-50 transition-colors shrink-0">
-                                        <DoorOpen className="w-7 h-7 text-slate-400 group-hover:text-blue-500 transition-colors" />
-                                    </div>
-
-                                    <div className="space-y-1.5 min-w-0">
-                                        <div className="space-y-1">
-                                            <h3 className="font-bold text-xl text-slate-900 group-hover:text-blue-700 transition-colors truncate">
-                                                {booking.title}
-                                            </h3>
+                <div className="space-y-6">
+                    <div className="space-y-4">
+                        {bookings.map((booking: any) => (
+                            <div
+                                key={booking.id}
+                                className="bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-md hover:border-blue-100 transition-all group overflow-hidden"
+                                onClick={() => navigate({ to: '/bookings/$bookingId', params: { bookingId: booking.id.toString() } } as any)}
+                            >
+                                <div className="p-2 pl-6 flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer hover:bg-blue-50/10">
+                                    <div className="flex items-center gap-6 py-4">
+                                        <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center group-hover:bg-blue-50 transition-colors shrink-0">
+                                            <DoorOpen className="w-7 h-7 text-slate-400 group-hover:text-blue-500 transition-colors" />
                                         </div>
 
-                                        <div className="flex items-center gap-1.5 text-slate-500 text-sm font-medium">
-                                            <DoorOpen className="w-3.5 h-3.5 shrink-0" />
-                                            <span>{booking.resource?.name}</span>
-                                        </div>
+                                        <div className="space-y-1.5 min-w-0">
+                                            <div className="space-y-1">
+                                                <h3 className="font-bold text-xl text-slate-900 group-hover:text-blue-700 transition-colors truncate">
+                                                    {booking.title}
+                                                </h3>
+                                            </div>
 
-                                        <div className="flex items-center gap-1.5 text-slate-500 text-sm font-medium">
-                                            <Clock2 className="w-3.5 h-3.5 shrink-0" />
-                                            <span>{new Date(booking.start_time).toLocaleDateString('th-TH', {
-                                                day: 'numeric',
-                                                month: 'short',
-                                                year: 'numeric',
-                                            })}</span>
-                                            <span className="w-1 h-1 rounded-full bg-slate-300" />
-                                            <span>{new Date(booking.start_time).toLocaleTimeString('th-TH', {
-                                                hour: '2-digit',
-                                                minute: '2-digit'
-                                            })} - {new Date(booking.end_time).toLocaleTimeString('th-TH', {
-                                                hour: '2-digit',
-                                                minute: '2-digit'
-                                            })} น.</span>
-                                        </div>
+                                            <div className="flex items-center gap-1.5 text-slate-500 text-sm font-medium">
+                                                <DoorOpen className="w-3.5 h-3.5 shrink-0" />
+                                                <span>{booking.resource?.name}</span>
+                                            </div>
 
-                                        <div className="flex items-center gap-1.5 text-slate-500 text-sm font-medium">
-                                            <Info className='w-3.5 h-3.5 mr-1' />
-                                            {(() => {
-                                                const statusMap: Record<number, { label: string; bg: string; text: string; border: string }> = {
-                                                    0: { label: 'รอการอนุมัติ', bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-100' },
-                                                    1: { label: 'อนุมัติการจอง', bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-100' },
-                                                    2: { label: 'ยกเลิกการจอง', bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-100' },
-                                                }
-                                                const s = statusMap[Number(booking.status)] ?? { label: `ไม่ระบุ (${booking.status})`, bg: 'bg-slate-50', text: 'text-slate-400', border: 'border-slate-200' }
-                                                return (
-                                                    <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider border ${s.bg} ${s.text} ${s.border}`}>
-                                                        {s.label}
-                                                    </span>
-                                                )
-                                            })()}
+                                            <div className="flex items-center gap-1.5 text-slate-500 text-sm font-medium">
+                                                <Clock2 className="w-3.5 h-3.5 shrink-0" />
+                                                <span>{new Date(booking.start_time).toLocaleDateString('th-TH', {
+                                                    day: 'numeric',
+                                                    month: 'short',
+                                                    year: 'numeric',
+                                                })}</span>
+                                                <span className="w-1 h-1 rounded-full bg-slate-300" />
+                                                <span>{new Date(booking.start_time).toLocaleTimeString('th-TH', {
+                                                    hour: '2-digit',
+                                                    minute: '2-digit'
+                                                })} - {new Date(booking.end_time).toLocaleTimeString('th-TH', {
+                                                    hour: '2-digit',
+                                                    minute: '2-digit'
+                                                })} น.</span>
+                                            </div>
+
+                                            <div className="flex items-center gap-1.5 text-slate-500 text-sm font-medium">
+                                                <Info className='w-3.5 h-3.5 mr-1' />
+                                                {(() => {
+                                                    const statusMap: Record<number, { label: string; bg: string; text: string; border: string }> = {
+                                                        0: { label: 'รอการอนุมัติ', bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-100' },
+                                                        1: { label: 'อนุมัติการจอง', bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-100' },
+                                                        2: { label: 'ยกเลิกการจอง', bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-100' },
+                                                    }
+                                                    const s = statusMap[Number(booking.status)] ?? { label: `ไม่ระบุ (${booking.status})`, bg: 'bg-slate-50', text: 'text-slate-400', border: 'border-slate-200' }
+                                                    return (
+                                                        <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider border ${s.bg} ${s.text} ${s.border}`}>
+                                                            {s.label}
+                                                        </span>
+                                                    )
+                                                })()}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
+
+                    <div className="pt-8 border-t border-slate-100">
+                        <Pagination>
+                            <PaginationContent>
+                                <PaginationItem>
+                                    <PaginationPrevious
+                                        href="#"
+                                        onClick={(e) => { e.preventDefault(); handlePageChange(page - 1) }}
+                                        className={page === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                                        text="ก่อนหน้า"
+                                    />
+                                </PaginationItem>
+
+                                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                                    <PaginationItem key={p} className="hidden sm:inline-block">
+                                        <PaginationLink
+                                            href="#"
+                                            onClick={(e) => { e.preventDefault(); handlePageChange(p) }}
+                                            isActive={page === p}
+                                            className="cursor-pointer font-bold"
+                                        >
+                                            {p}
+                                        </PaginationLink>
+                                    </PaginationItem>
+                                ))}
+
+                                <PaginationItem>
+                                    <PaginationNext
+                                        href="#"
+                                        onClick={(e) => { e.preventDefault(); handlePageChange(page + 1) }}
+                                        className={page === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                                        text="ถัดไป"
+                                    />
+                                </PaginationItem>
+                            </PaginationContent>
+                        </Pagination>
+                    </div>
                 </div>
             ) : (
                 <div className="bg-white rounded-3xl border border-dashed border-slate-200 p-16 text-center">

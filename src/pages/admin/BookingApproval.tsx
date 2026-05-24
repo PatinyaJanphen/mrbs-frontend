@@ -14,6 +14,7 @@ import {
 import { useBookings } from '@/hooks/queries/useBookings'
 import { bookingService } from '@/services/booking.service'
 import { Button } from '@/components/ui/button'
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, } from '@/components/ui/pagination'
 import { toast } from 'sonner'
 import {
     Dialog,
@@ -27,8 +28,22 @@ import { Textarea } from '@/components/ui/textarea'
 
 export function BookingApproval() {
     const queryClient = useQueryClient()
+    const [page, setPage] = useState(1)
 
-    const { data: bookingsData, isLoading, error } = useBookings({ status: '0', per_page: 100 })
+    const { data: bookingsData, isLoading, error } = useBookings({ status: '0', page, per_page: 10 })
+    const bookings = bookingsData?.data ?? []
+    const pagination = (bookingsData as any)?.meta ?? bookingsData
+    const totalPages = pagination?.last_page ?? 1
+
+    const handlePageChange = (p: number) => {
+        if (p >= 1 && p <= totalPages) {
+            setPage(p)
+            const element = document.getElementById('booking-history-section')
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' })
+            }
+        }
+    }
 
 
     const [isApproveDialogOpen, setIsApproveDialogOpen] = useState(false)
@@ -65,8 +80,6 @@ export function BookingApproval() {
         }
     })
 
-    const bookings = bookingsData?.data ?? []
-
     return (
         <div className="space-y-8">
 
@@ -98,90 +111,129 @@ export function BookingApproval() {
                     <p className="text-red-400 font-medium">{(error as any).message}</p>
                 </div>
             ) : bookings.length > 0 ? (
-                <div className="space-y-4">
-                    {bookings.map((booking: any) => (
-                        <div
-                            key={booking.id}
-                            className="bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-md hover:border-blue-100 transition-all group overflow-hidden"
-                        >
-                            <div className="p-6 md:p-8 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-                                <div className="flex items-center gap-6 py-4">
-                                    <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center group-hover:bg-blue-50 transition-colors shrink-0">
-                                        <DoorOpen className="w-7 h-7 text-slate-400 group-hover:text-blue-500 transition-colors" />
+                <div className="space-y-6">
+                    <div className="space-y-4">
+                        {bookings.map((booking: any) => (
+                            <div
+                                key={booking.id}
+                                className="bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-md hover:border-blue-100 transition-all group overflow-hidden"
+                            >
+                                <div className="p-6 md:p-8 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+                                    <div className="flex items-center gap-6 py-4">
+                                        <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center group-hover:bg-blue-50 transition-colors shrink-0">
+                                            <DoorOpen className="w-7 h-7 text-slate-400 group-hover:text-blue-500 transition-colors" />
+                                        </div>
+
+                                        <div className="space-y-1.5 min-w-0">
+                                            <div className="space-y-1">
+                                                <h3 className="font-black text-2xl text-slate-900 group-hover:text-blue-700 transition-colors truncate">
+                                                    {booking.title}
+                                                </h3>
+                                            </div>
+
+                                            <div className="flex items-center gap-1.5 text-slate-500 text-sm font-medium">
+                                                <DoorOpen className="w-3.5 h-3.5 shrink-0" />
+                                                <span>{booking.resource?.name}</span>
+                                            </div>
+
+                                            <div className="flex items-center gap-1.5 text-slate-500 text-sm font-medium">
+                                                <Clock2 className="w-3.5 h-3.5 shrink-0" />
+                                                <span>{new Date(booking.start_time).toLocaleDateString('th-TH', {
+                                                    day: 'numeric',
+                                                    month: 'short',
+                                                    year: 'numeric',
+                                                })}</span>
+                                                <span className="w-1 h-1 rounded-full bg-slate-300" />
+                                                <span>{new Date(booking.start_time).toLocaleTimeString('th-TH', {
+                                                    hour: '2-digit',
+                                                    minute: '2-digit'
+                                                })} - {new Date(booking.end_time).toLocaleTimeString('th-TH', {
+                                                    hour: '2-digit',
+                                                    minute: '2-digit'
+                                                })} น.</span>
+                                            </div>
+
+                                            <div className="flex items-center gap-1.5 text-slate-500 text-sm font-medium">
+                                                <User className="w-4 h-4 text-slate-400" />
+                                                {booking.user?.name}
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <div className="space-y-1.5 min-w-0">
-                                        <div className="space-y-1">
-                                            <h3 className="font-black text-2xl text-slate-900 group-hover:text-blue-700 transition-colors truncate">
-                                                {booking.title}
-                                            </h3>
-                                        </div>
-
-                                        <div className="flex items-center gap-1.5 text-slate-500 text-sm font-medium">
-                                            <DoorOpen className="w-3.5 h-3.5 shrink-0" />
-                                            <span>{booking.resource?.name}</span>
-                                        </div>
-
-                                        <div className="flex items-center gap-1.5 text-slate-500 text-sm font-medium">
-                                            <Clock2 className="w-3.5 h-3.5 shrink-0" />
-                                            <span>{new Date(booking.start_time).toLocaleDateString('th-TH', {
-                                                day: 'numeric',
-                                                month: 'short',
-                                                year: 'numeric',
-                                            })}</span>
-                                            <span className="w-1 h-1 rounded-full bg-slate-300" />
-                                            <span>{new Date(booking.start_time).toLocaleTimeString('th-TH', {
-                                                hour: '2-digit',
-                                                minute: '2-digit'
-                                            })} - {new Date(booking.end_time).toLocaleTimeString('th-TH', {
-                                                hour: '2-digit',
-                                                minute: '2-digit'
-                                            })} น.</span>
-                                        </div>
-
-                                        <div className="flex items-center gap-1.5 text-slate-500 text-sm font-medium">
-                                            <User className="w-4 h-4 text-slate-400" />
-                                            {booking.user?.name}
-                                        </div>
+                                    <div className="flex items-center gap-3 lg:shrink-0 pt-4 lg:pt-0 border-t lg:border-none border-slate-50">
+                                        <Button
+                                            onClick={() => {
+                                                setSelectedBookingId(booking.id)
+                                                setIsRejectDialogOpen(true)
+                                            }}
+                                            disabled={rejectMutation.isPending || approveMutation.isPending}
+                                            variant="outline"
+                                            className="flex-1 lg:flex-none h-12 px-6 rounded-xl border-slate-200 text-red-500 hover:bg-red-50 hover:text-red-600 hover:border-red-200 font-bold transition-all gap-2"
+                                        >
+                                            {rejectMutation.isPending && rejectMutation.variables?.id === booking.id ? (
+                                                <Loader2 className="h-4 w-4 animate-spin" />
+                                            ) : (
+                                                <XCircle className="h-5 w-5" />
+                                            )}
+                                            ปฏิเสธ
+                                        </Button>
+                                        <Button
+                                            onClick={() => {
+                                                setSelectedApproveBookingId(booking.id)
+                                                setIsApproveDialogOpen(true)
+                                            }}
+                                            disabled={approveMutation.isPending || rejectMutation.isPending}
+                                            className="flex-1 lg:flex-none h-12 px-8 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold transition-all shadow-lg shadow-emerald-100 hover:shadow-emerald-200 gap-2"
+                                        >
+                                            {approveMutation.isPending && approveMutation.variables === booking.id ? (
+                                                <Loader2 className="h-4 w-4 animate-spin" />
+                                            ) : (
+                                                <CheckCircle2 className="h-5 w-5" />
+                                            )}
+                                            อนุมัติการจอง
+                                        </Button>
                                     </div>
-                                </div>
-
-                                <div className="flex items-center gap-3 lg:shrink-0 pt-4 lg:pt-0 border-t lg:border-none border-slate-50">
-                                    <Button
-                                        onClick={() => {
-                                            setSelectedBookingId(booking.id)
-                                            setIsRejectDialogOpen(true)
-                                        }}
-                                        disabled={rejectMutation.isPending || approveMutation.isPending}
-                                        variant="outline"
-                                        className="flex-1 lg:flex-none h-12 px-6 rounded-xl border-slate-200 text-red-500 hover:bg-red-50 hover:text-red-600 hover:border-red-200 font-bold transition-all gap-2"
-                                    >
-                                        {rejectMutation.isPending && rejectMutation.variables?.id === booking.id ? (
-                                            <Loader2 className="h-4 w-4 animate-spin" />
-                                        ) : (
-                                            <XCircle className="h-5 w-5" />
-                                        )}
-                                        ปฏิเสธ
-                                    </Button>
-                                    <Button
-                                        onClick={() => {
-                                            setSelectedApproveBookingId(booking.id)
-                                            setIsApproveDialogOpen(true)
-                                        }}
-                                        disabled={approveMutation.isPending || rejectMutation.isPending}
-                                        className="flex-1 lg:flex-none h-12 px-8 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold transition-all shadow-lg shadow-emerald-100 hover:shadow-emerald-200 gap-2"
-                                    >
-                                        {approveMutation.isPending && approveMutation.variables === booking.id ? (
-                                            <Loader2 className="h-4 w-4 animate-spin" />
-                                        ) : (
-                                            <CheckCircle2 className="h-5 w-5" />
-                                        )}
-                                        อนุมัติการจอง
-                                    </Button>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
+
+                    <div className="pt-8 border-t border-slate-100">
+                        <Pagination>
+                            <PaginationContent>
+                                <PaginationItem>
+                                    <PaginationPrevious
+                                        href="#"
+                                        onClick={(e) => { e.preventDefault(); handlePageChange(page - 1) }}
+                                        className={page === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                                        text="ก่อนหน้า"
+                                    />
+                                </PaginationItem>
+
+                                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                                    <PaginationItem key={p} className="hidden sm:inline-block">
+                                        <PaginationLink
+                                            href="#"
+                                            onClick={(e) => { e.preventDefault(); handlePageChange(p) }}
+                                            isActive={page === p}
+                                            className="cursor-pointer font-bold"
+                                        >
+                                            {p}
+                                        </PaginationLink>
+                                    </PaginationItem>
+                                ))}
+
+                                <PaginationItem>
+                                    <PaginationNext
+                                        href="#"
+                                        onClick={(e) => { e.preventDefault(); handlePageChange(page + 1) }}
+                                        className={page === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                                        text="ถัดไป"
+                                    />
+                                </PaginationItem>
+                            </PaginationContent>
+                        </Pagination>
+                    </div>
                 </div>
             ) : (
                 <div className="bg-white rounded-3xl border border-dashed border-slate-200 p-16 text-center">

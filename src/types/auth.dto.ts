@@ -6,6 +6,7 @@ export interface AuthUser {
     email: string
     avatar?: string
     role: number
+    is_active?: boolean
     company_id: number
     phone?: string
     department?: string

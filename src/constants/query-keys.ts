@@ -6,6 +6,11 @@ export const QUERY_KEYS = {
         ALL: ['rooms'] as const,
         DETAIL: (id: number) => ['room', id] as const,
     },
+    USERS: {
+        ALL: ['users'] as const,
+        DETAIL: (id: number) => ['user', id] as const,
+        BOOKINGS: (id: number) => ['user-bookings', id] as const,
+    },
     BOOKINGS: {
         ALL: ['bookings'] as const,
         MY: ['my-bookings'] as const,

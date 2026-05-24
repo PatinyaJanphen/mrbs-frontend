@@ -15,6 +15,14 @@ export const API_ROUTES = {
         UPDATE: (id: number) => `/rooms/${id}`,
         DELETE: (id: number) => `/rooms/${id}`,
     },
+    USERS: {
+        LIST: '/users',
+        DETAIL: (id: number) => `/users/${id}`,
+        CREATE: '/users',
+        UPDATE: (id: number) => `/users/${id}`,
+        TOGGLE_ACTIVE: (id: number) => `/users/${id}/toggle-active`,
+        BOOKINGS: (id: number) => `/users/${id}/bookings`,
+    },
     BOOKINGS: {
         LIST: '/bookings',
         MY: '/bookings/my',

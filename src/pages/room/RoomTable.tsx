@@ -30,7 +30,8 @@ export function RoomsPage() {
 
     const rooms = roomsData?.data ?? []
     const canManage = isAdmin || isSuperAdmin;
-    const totalPages = roomsData?.last_page ?? 1
+    const pagination = (roomsData as any)?.meta ?? roomsData
+    const totalPages = pagination?.last_page ?? 1
 
     const handlePageChange = (p: number) => {
         if (p >= 1 && p <= totalPages) {
@@ -45,7 +46,7 @@ export function RoomsPage() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold text-slate-800">ห้องประชุม</h1>
-                    <p className="text-slate-500 mt-1">รายการห้องประชุม</p>
+                    <p className="text-slate-500 mt-1">รายการจองห้องประชุมของคุณ</p>
                 </div>
 
                 {canManage && (
