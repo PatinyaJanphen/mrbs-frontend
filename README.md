@@ -17,10 +17,13 @@ To build this application for production:
 bun --bun run build
 ```
 
-## Testing
+## Live Demo
 
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
+- **Visit the website.:** [Live Demo](https://mrbs-testsite.netlify.app)
 
-```bash
-bun --bun run test
+### Demo Account
+
+```text
+Username: admin@demo.com
+Password: password
 ```
