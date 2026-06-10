@@ -12,8 +12,8 @@ export interface UserListParams {
 
 export const userService = {
     list: async (params?: UserListParams): Promise<PaginatedUsers> => {
-        const { data } = await apiClient.get<PaginatedUsers>(API_ROUTES.USERS.LIST, { params })
-        return data
+        const { data } = await apiClient.get<ApiResponse<PaginatedUsers>>(API_ROUTES.USERS.LIST, { params })
+        return data.data
     },
 
     get: async (id: number): Promise<ManagedUser> => {
@@ -37,7 +37,7 @@ export const userService = {
     },
 
     bookings: async (id: number, params?: { page?: number; per_page?: number }): Promise<PaginatedUserBookings> => {
-        const { data } = await apiClient.get<PaginatedUserBookings>(API_ROUTES.USERS.BOOKINGS(id), { params })
-        return data
+        const { data } = await apiClient.get<ApiResponse<PaginatedUserBookings>>(API_ROUTES.USERS.BOOKINGS(id), { params })
+        return data.data
     },
 }

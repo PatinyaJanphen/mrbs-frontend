@@ -199,7 +199,8 @@ export function BookingDetail() {
                     end_time: booking.end_time
                 }}
                 roomsData={roomsData}
-                isLoading={isLoadingRooms || updateMutation.isPending}
+                isLoading={isLoadingRooms}
+                isSubmitting={updateMutation.isPending}
                 isReadOnly={!isEditing}
                 onSubmit={(data) => updateMutation.mutate(data)}
                 onCancel={() => setIsEditing(false)}

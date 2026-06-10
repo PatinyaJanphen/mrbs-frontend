@@ -4,14 +4,12 @@ import { bookingService } from '@/services/booking.service'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import { useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
 import { toast } from 'sonner'
 import type { CreateBookingDto } from '@/types/booking.dto'
 import { BookingForm } from './components/BookingForm'
 
 export function BookingIndex() {
     const navigate = useNavigate()
-    const [isSubmitting, setIsSubmitting] = useState(false)
 
     const { data: roomsData, isLoading: isLoading } = useRooms({ per_page: 100 })
 
@@ -23,14 +21,8 @@ export function BookingIndex() {
         },
         onError: (err: any) => {
             toast.error(err?.response?.data?.message || 'ไม่สามารถทำการจองได้กรุณาลองอีกครั้ง')
-            setIsSubmitting(false)
         }
     })
-
-    const handleSubmit = (data: CreateBookingDto) => {
-        setIsSubmitting(true)
-        createMutation.mutate(data)
-    }
 
     return (
         <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
@@ -54,8 +46,8 @@ export function BookingIndex() {
             <BookingForm
                 roomsData={roomsData}
                 isLoading={isLoading}
-                isSubmitting={isSubmitting}
-                onSubmit={handleSubmit}
+                isSubmitting={createMutation.isPending}
+                onSubmit={(data) => createMutation.mutate(data)}
                 onCancel={() => navigate({ to: '/bookings/my' } as any)}
             />
         </div>

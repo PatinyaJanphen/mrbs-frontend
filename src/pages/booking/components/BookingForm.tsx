@@ -24,6 +24,7 @@ export function BookingForm({
     initialData,
     roomsData,
     isLoading,
+    isSubmitting = false,
     onSubmit,
     onCancel,
     submitLabel = 'บันทึกการจอง',
@@ -203,10 +204,17 @@ export function BookingForm({
                         </Button>
                         <Button
                             type="submit"
-                            disabled={isLoading}
-                            className="bg-blue-600 hover:bg-blue-700 text-white min-w-[120px]"
+                            disabled={isSubmitting || isLoading}
+                            className="bg-blue-600 hover:bg-blue-700 text-white min-w-[120px] flex items-center justify-center gap-2"
                         >
-                            {isLoading ? 'กำลังบันทึก...' : submitLabel}
+                            {isSubmitting ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    <span>กำลังบันทึก...</span>
+                                </>
+                            ) : (
+                                submitLabel
+                            )}
                         </Button>
                     </div>
                 )}

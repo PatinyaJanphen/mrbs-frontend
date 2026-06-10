@@ -18,21 +18,21 @@ interface BookingListParams {
 
 export const bookingService = {
 	list: async (params?: BookingListParams): Promise<PaginatedBookings> => {
-		const { data } = await apiClient.get<PaginatedBookings>(
+		const { data } = await apiClient.get<ApiResponse<PaginatedBookings>>(
 			API_ROUTES.BOOKINGS.LIST,
 			{ params },
 		);
-		return data;
+		return data.data;
 	},
 
 	myBookings: async (
 		params?: BookingListParams,
 	): Promise<PaginatedBookings> => {
-		const { data } = await apiClient.get<PaginatedBookings>(
+		const { data } = await apiClient.get<ApiResponse<PaginatedBookings>>(
 			API_ROUTES.BOOKINGS.MY,
 			{ params },
 		);
-		return data;
+		return data.data;
 	},
 
 	get: async (id: number): Promise<Booking> => {
