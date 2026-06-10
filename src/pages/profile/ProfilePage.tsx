@@ -14,7 +14,6 @@ import {
     Mail,
     Lock,
     Shield,
-    Building2,
     Save,
     Loader2,
     KeyRound,
@@ -270,17 +269,6 @@ export function ProfilePage() {
                             <div className="w-full border-t border-slate-100 my-6" />
 
                             <div className="w-full space-y-4">
-                                <div className="flex items-center gap-3 text-slate-600">
-                                    <div className="p-2 bg-slate-50 rounded-lg text-slate-400">
-                                        <Building2 className="h-4 w-4" />
-                                    </div>
-                                    <div className="text-left">
-                                        <p className="text-xs text-slate-400 font-medium leading-none">องค์กร / บริษัท</p>
-                                        <p className="text-sm font-semibold text-slate-700 mt-1">
-                                            {user?.company_id ? `Workspace #${user.company_id}` : "ไม่ได้สังกัดบริษัท"}
-                                        </p>
-                                    </div>
-                                </div>
                                 <div className="flex items-center gap-3 text-slate-600">
                                     <div className="p-2 bg-slate-50 rounded-lg text-slate-400">
                                         <Briefcase className="h-4 w-4" />

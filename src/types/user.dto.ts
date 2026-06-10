@@ -8,7 +8,6 @@ export interface ManagedUser {
     avatar?: string
     role: UserRole
     is_active: boolean
-    company_id?: number
     phone?: string
     department?: string
     bookings_count?: number
@@ -22,7 +21,6 @@ export interface UpsertUserDto {
     role: UserRole
     phone?: string
     department?: string
-    company_id?: number
     password?: string
     is_active?: boolean
 }

@@ -9,7 +9,6 @@ export interface AuthUser {
     avatar?: string
     role: UserRole
     is_active?: boolean
-    company_id: number
     phone?: string
     department?: string
 }

@@ -41,7 +41,9 @@ function AuthCallbackPage() {
                     email: user.email || '',
                     avatar: user.avatar || user.profile_photo_url || '',
                     role: user.role ?? 3,
-                    company_id: user.company_id,
+                    is_active: user.is_active,
+                    phone: user.phone,
+                    department: user.department,
                 })
 
                 setStatus('success')

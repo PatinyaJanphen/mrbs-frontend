@@ -4,7 +4,6 @@ import type { Room } from './room.dto'
 
 export interface Booking {
     id: number
-    company_id: number
     user_id: number
     resource_id: number
     title: string
