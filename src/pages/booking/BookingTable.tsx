@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ClipboardList, Loader2, CalendarPlus, Filter, DoorOpen, Clock2, Info } from 'lucide-react'
+import { ClipboardList, Loader2, CalendarPlus, Filter, DoorOpen, Clock2, Info, Building2, CheckCircle2, XCircle, ChevronRight, Clock } from 'lucide-react'
 import { useBookings, useMyBookings } from '@/hooks/queries/useBookings'
 import { Button } from '@/components/ui/button'
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, } from '@/components/ui/pagination'
@@ -81,57 +81,61 @@ export function BookingTable({ myOnly = false }: BookingTableProps) {
                                 className="bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-md hover:border-blue-100 transition-all group overflow-hidden"
                                 onClick={() => navigate({ to: '/bookings/$bookingId', params: { bookingId: booking.id.toString() } } as any)}
                             >
-                                <div className="p-2 pl-6 flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer hover:bg-blue-50/10">
-                                    <div className="flex items-center gap-6 py-4">
-                                        <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center group-hover:bg-blue-50 transition-colors shrink-0">
-                                            <DoorOpen className="w-7 h-7 text-slate-400 group-hover:text-blue-500 transition-colors" />
+                                <div className="p-4 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 cursor-pointer hover:bg-blue-50/50 transition-colors">
+                                    <div className="flex items-start md:items-center gap-5">
+                                        <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0 border border-blue-100 shadow-sm">
+                                            <Building2 className="w-6 h-6 text-blue-600" />
                                         </div>
 
                                         <div className="space-y-1.5 min-w-0">
-                                            <div className="space-y-1">
-                                                <h3 className="font-bold text-xl text-slate-900 group-hover:text-blue-700 transition-colors truncate">
-                                                    {booking.title}
-                                                </h3>
-                                            </div>
+                                            <h3 className="font-bold text-lg text-slate-900 group-hover:text-blue-700 transition-colors truncate">
+                                                {booking.title}
+                                            </h3>
 
-                                            <div className="flex items-center gap-1.5 text-slate-500 text-sm font-medium">
-                                                <DoorOpen className="w-3.5 h-3.5 shrink-0" />
-                                                <span>{booking.resource?.name}</span>
+                                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-slate-500 text-sm font-medium">
+                                                <div className="flex items-center gap-1.5">
+                                                    <DoorOpen className="w-4 h-4 shrink-0 text-slate-400" />
+                                                    <span>{booking.resource?.name}</span>
+                                                </div>
+                                                <div className="hidden sm:block w-1 h-1 rounded-full bg-slate-300" />
+                                                <div className="flex items-center gap-1.5">
+                                                    <Clock2 className="w-4 h-4 shrink-0 text-slate-400" />
+                                                    <span>{new Date(booking.start_time).toLocaleDateString('th-TH', {
+                                                        day: 'numeric',
+                                                        month: 'short',
+                                                        year: 'numeric',
+                                                    })} • {new Date(booking.start_time).toLocaleTimeString('th-TH', {
+                                                        hour: '2-digit',
+                                                        minute: '2-digit'
+                                                    })} - {new Date(booking.end_time).toLocaleTimeString('th-TH', {
+                                                        hour: '2-digit',
+                                                        minute: '2-digit'
+                                                    })} น.</span>
+                                                </div>
                                             </div>
+                                        </div>
+                                    </div>
 
-                                            <div className="flex items-center gap-1.5 text-slate-500 text-sm font-medium">
-                                                <Clock2 className="w-3.5 h-3.5 shrink-0" />
-                                                <span>{new Date(booking.start_time).toLocaleDateString('th-TH', {
-                                                    day: 'numeric',
-                                                    month: 'short',
-                                                    year: 'numeric',
-                                                })}</span>
-                                                <span className="w-1 h-1 rounded-full bg-slate-300" />
-                                                <span>{new Date(booking.start_time).toLocaleTimeString('th-TH', {
-                                                    hour: '2-digit',
-                                                    minute: '2-digit'
-                                                })} - {new Date(booking.end_time).toLocaleTimeString('th-TH', {
-                                                    hour: '2-digit',
-                                                    minute: '2-digit'
-                                                })} น.</span>
-                                            </div>
-
-                                            <div className="flex items-center gap-1.5 text-slate-500 text-sm font-medium">
-                                                <Info className='w-3.5 h-3.5 mr-1' />
-                                                {(() => {
-                                                    const statusMap: Record<number, { label: string; bg: string; text: string; border: string }> = {
-                                                        0: { label: 'รอการอนุมัติ', bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-100' },
-                                                        1: { label: 'อนุมัติการจอง', bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-100' },
-                                                        2: { label: 'ยกเลิกการจอง', bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-100' },
-                                                    }
-                                                    const s = statusMap[Number(booking.status)] ?? { label: `ไม่ระบุ (${booking.status})`, bg: 'bg-slate-50', text: 'text-slate-400', border: 'border-slate-200' }
-                                                    return (
-                                                        <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider border ${s.bg} ${s.text} ${s.border}`}>
-                                                            {s.label}
-                                                        </span>
-                                                    )
-                                                })()}
-                                            </div>
+                                    <div className="flex flex-row md:flex-col items-center md:items-end justify-between gap-4 border-t md:border-none border-slate-100 pt-4 md:pt-0">
+                                        {(() => {
+                                            const statusMap: Record<number, { label: string; bg: string; text: string; icon: any }> = {
+                                                0: { label: 'รอการอนุมัติ', bg: 'bg-amber-100', text: 'text-amber-800', icon: Clock },
+                                                1: { label: 'อนุมัติการจอง', bg: 'bg-emerald-100', text: 'text-emerald-800', icon: CheckCircle2 },
+                                                2: { label: 'ยกเลิกการจอง', bg: 'bg-red-100', text: 'text-red-800', icon: XCircle },
+                                            }
+                                            const s = statusMap[Number(booking.status)] ?? { label: `ไม่ระบุ (${booking.status})`, bg: 'bg-slate-100', text: 'text-slate-600', icon: Info }
+                                            const StatusIcon = s.icon
+                                            return (
+                                                <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${s.bg} ${s.text}`}>
+                                                    <StatusIcon className="w-3.5 h-3.5" />
+                                                    {s.label}
+                                                </span>
+                                            )
+                                        })()}
+                                        
+                                        <div className="flex items-center gap-1 text-sm font-semibold text-blue-600 group-hover:text-blue-700 transition-colors">
+                                            ดูรายละเอียด
+                                            <ChevronRight className="w-4 h-4" />
                                         </div>
                                     </div>
                                 </div>

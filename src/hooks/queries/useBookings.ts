@@ -9,6 +9,7 @@ export interface BookingListParams {
     resource_id?: number
     from?: string
     to?: string
+    upcoming?: boolean
 }
 
 export function useBookings(params?: BookingListParams, options?: { enabled?: boolean }) {

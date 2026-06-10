@@ -119,7 +119,7 @@ export function BookingApproval() {
                                 className="bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-md hover:border-blue-100 transition-all group overflow-hidden"
                             >
                                 <div className="p-6 md:p-8 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-                                    <div className="flex items-center gap-6 py-4">
+                                    <div className="flex items-center gap-6">
                                         <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center group-hover:bg-blue-50 transition-colors shrink-0">
                                             <DoorOpen className="w-7 h-7 text-slate-400 group-hover:text-blue-500 transition-colors" />
                                         </div>
@@ -153,9 +153,15 @@ export function BookingApproval() {
                                                 })} น.</span>
                                             </div>
 
-                                            <div className="flex items-center gap-1.5 text-slate-500 text-sm font-medium">
+                                            <div className="flex items-center flex-wrap gap-1.5 text-slate-500 text-sm font-medium">
                                                 <User className="w-4 h-4 text-slate-400" />
-                                                {booking.user?.name}
+                                                <span>{booking.user?.name}</span>
+                                                {booking.purpose && (
+                                                    <>
+                                                        <span className="w-1 h-1 rounded-full bg-slate-300 mx-1" />
+                                                        <span className="text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md text-xs">{booking.purpose}</span>
+                                                    </>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -168,7 +174,7 @@ export function BookingApproval() {
                                             }}
                                             disabled={rejectMutation.isPending || approveMutation.isPending}
                                             variant="outline"
-                                            className="flex-1 lg:flex-none h-12 px-6 rounded-xl border-slate-200 text-red-500 hover:bg-red-50 hover:text-red-600 hover:border-red-200 font-bold transition-all gap-2"
+                                            className="flex-1 lg:flex-none h-12 px-8 rounded-xl border-slate-200 text-red-500 hover:bg-red-50 hover:text-red-600 hover:border-red-200 font-bold transition-all gap-2"
                                         >
                                             {rejectMutation.isPending && rejectMutation.variables?.id === booking.id ? (
                                                 <Loader2 className="h-4 w-4 animate-spin" />

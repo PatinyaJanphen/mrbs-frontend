@@ -165,10 +165,18 @@ export function BookingDetail() {
                         <ArrowLeft className="h-5 w-5" />
                     </Button>
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-800">
-                            {isEditing ? 'แก้ไขการจอง' : 'รายละเอียดการจอง'}
-                        </h1>
-                        <p className="flex items-center gap-2 text-slate-500 text-sm">
+                        <div className="flex items-center gap-3">
+                            <h1 className="text-2xl font-bold text-slate-800">
+                                {isEditing ? 'แก้ไขการจอง' : 'รายละเอียดการจอง'}
+                            </h1>
+                            {!isEditing && (
+                                <div className={`px-2.5 py-1 rounded-full flex items-center gap-1.5 text-xs font-semibold ${sConfig.bg} ${sConfig.color}`}>
+                                    <StatusIcon className="w-3.5 h-3.5" />
+                                    {sConfig.label}
+                                </div>
+                            )}
+                        </div>
+                        <p className="flex items-center gap-2 text-slate-500 text-sm mt-1">
                             <Album className="w-4 h-4" />
                             ข้อมูลการจอง
                         </p>
@@ -176,12 +184,6 @@ export function BookingDetail() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                    {!isEditing && (
-                        <div className={`px-5 py-2.5 rounded-2xl flex items-center gap-2.5 font-bold border ${sConfig.bg} ${sConfig.color} ${sConfig.border} shadow-sm`}>
-                            <StatusIcon className="w-5 h-5" />
-                            {sConfig.label}
-                        </div>
-                    )}
 
                     {isCheckInAllowed && (
                         <Button
@@ -208,8 +210,8 @@ export function BookingDetail() {
                         <Button
                             onClick={handleCancel}
                             disabled={cancelMutation.isPending}
-                            variant="outline"
-                            className="h-12 px-6 rounded-2xl border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 gap-2 font-medium transition-all"
+                            variant="ghost"
+                            className="h-12 px-6 rounded-2xl text-slate-500 hover:text-red-600 hover:bg-red-50 gap-2 font-medium transition-all"
                         >
                             {cancelMutation.isPending
                                 ? <Loader2 className="w-4 h-4 animate-spin" />
