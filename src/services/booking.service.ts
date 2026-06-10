@@ -82,4 +82,11 @@ export const bookingService = {
 		);
 		return data.data;
 	},
+
+	checkIn: async (id: number): Promise<Booking> => {
+		const { data } = await apiClient.post<ApiResponse<Booking>>(
+			API_ROUTES.BOOKINGS.CHECK_IN(id),
+		);
+		return data.data;
+	},
 };

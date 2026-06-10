@@ -13,6 +13,8 @@ export interface Booking {
     status: BookingStatus
     approved_by?: number
     google_event_id?: string
+    reject_reason?: string
+    checked_in_at?: string | null
     created_at: string
     updated_at: string
     user?: AuthUser

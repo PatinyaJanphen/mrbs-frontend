@@ -68,6 +68,18 @@ export function BookingDetail() {
         }
     })
 
+    const checkInMutation = useMutation({
+        mutationFn: () => bookingService.checkIn(bookingId),
+        onSuccess: () => {
+            toast.success('เช็คอินเข้าใช้งานสำเร็จ')
+            queryClient.invalidateQueries({ queryKey: ['booking', bookingId] })
+            queryClient.invalidateQueries({ queryKey: ['bookings'] })
+        },
+        onError: (err: any) => {
+            toast.error(err?.response?.data?.message || 'ไม่สามารถทำการเช็คอินได้')
+        }
+    })
+
     const handleCancel = () => {
         setIsCancel(true)
     }
@@ -108,7 +120,10 @@ export function BookingDetail() {
         )
     }
 
-    const getStatusConfig = (status: BookingStatus) => {
+    const getStatusConfig = (status: BookingStatus, checkedInAt?: string | null) => {
+        if (status === BOOKING_STATUS.CONFIRMED && checkedInAt) {
+            return { color: 'text-indigo-600', bg: 'bg-indigo-50', border: 'border-indigo-200', icon: CheckCircle2, label: 'เช็คอินแล้ว' }
+        }
         switch (status) {
             case BOOKING_STATUS.CONFIRMED:
                 return { color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200', icon: CheckCircle2, label: 'อนุมัติแล้ว' }
@@ -120,8 +135,22 @@ export function BookingDetail() {
         }
     }
 
-    const sConfig = getStatusConfig(booking.status)
+    const sConfig = getStatusConfig(booking.status, booking.checked_in_at)
     const StatusIcon = sConfig.icon
+
+    const isAdmin = user?.role !== undefined && user.role <= 1
+    const canCheckIn = isOwner || isAdmin
+    const now = new Date()
+    const startTime = new Date(booking.start_time)
+    const endTime = new Date(booking.end_time)
+    const checkInStartTime = new Date(startTime.getTime() - 15 * 60 * 1000)
+
+    const isCheckInAllowed =
+        canCheckIn &&
+        booking.status === BOOKING_STATUS.CONFIRMED &&
+        !booking.checked_in_at &&
+        now >= checkInStartTime &&
+        now <= endTime
 
     return (
         <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
@@ -152,6 +181,17 @@ export function BookingDetail() {
                             <StatusIcon className="w-5 h-5" />
                             {sConfig.label}
                         </div>
+                    )}
+
+                    {isCheckInAllowed && (
+                        <Button
+                            onClick={() => checkInMutation.mutate()}
+                            className="h-12 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg gap-2 font-medium transition-all"
+                            disabled={checkInMutation.isPending}
+                        >
+                            {checkInMutation.isPending ? <Loader2 className="animate-spin w-4 h-4"/> : <CheckCircle2 className="w-4 h-4" />}
+                            เช็คอินเข้าใช้งาน
+                        </Button>
                     )}
 
                     {canEdit && !isEditing && (
