@@ -2,8 +2,15 @@
   command = "bun run build"
   publish = "dist/client"
 
+# กฎที่ 1: ส่งทุกอย่างที่ขึ้นต้นด้วย /api ไปที่ Render
+[[redirects]]
+  from = "/api/*"
+  to = "https://mrbs-api-yixs.onrender.com/api/:splat"
+  status = 200
+  force = true
+
+# กฎที่ 2: ส่งที่เหลือไปที่ index.html (สำหรับหน้าเว็บปกติ)
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-
